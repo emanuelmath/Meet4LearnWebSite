@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import planRoutes from './routes/planRoutes.js'
 
 // Carga variables de entorno.
 dotenv.config();
@@ -15,6 +16,8 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.send('Probando backend...');
 });
+
+app.use('/plans', planRoutes);
 
 const PORT = process.env.PORT || 4000;
 
