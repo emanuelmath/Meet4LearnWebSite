@@ -1,0 +1,17 @@
+{
+  "name": "meet4learnwebsite",
+  "version": "1.0.0",
+  "description": "Sitio web de Meet4Learn que une a los docentes con los usuarios en dispositivos android y ayuda al administrador a tener control.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-backend": "npm --prefix backend start",
+    "start-frontend": "npm --prefix frontend/meet-4-learn-website start",
+    "start": "concurrently \"npm run start-backend\" \"npm run start-frontend\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
