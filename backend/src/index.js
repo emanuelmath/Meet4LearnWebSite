@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import planRoutes from './routes/planRoutes.js'
+import profileRoutes from './routes/profileRoutes.js'
 
 // Carga variables de entorno.
 dotenv.config();
@@ -18,6 +19,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/plans', planRoutes);
+app.use('/profiles', profileRoutes)
 
 const PORT = process.env.PORT || 4000;
 
