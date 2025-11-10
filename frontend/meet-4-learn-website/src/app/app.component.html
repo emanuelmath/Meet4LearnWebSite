@@ -1,1 +1,8 @@
 <h1>HOLA MUNDO!</h1>
+<h2>Lista de Cursos</h2>
+<ul>
+  <li *ngFor="let course of courses">
+    {{ course.name }} - {{ course.subject }} - {{course.start_date}} - {{course.finish_date}}
+    {{course.price}} - {{course.teacherId}} - {{course.status}}
+  </li>
+</ul>

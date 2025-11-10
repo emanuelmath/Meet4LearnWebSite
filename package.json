@@ -5,13 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-backend": "npm --prefix backend start",
-    "start-frontend": "npm --prefix frontend/meet-4-learn-website start",
-    "start": "concurrently \"npm run start-backend\" \"npm run start-frontend\""
+    "start": "npm --prefix frontend/meet-4-learn-website start"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^9.2.1"
+    "@supabase/supabase-js": "^2.80.0",
+    "bcrypt": "^6.0.0",
+    "concurrently": "^9.2.1",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "supabase": "^2.54.11"
   }
 }

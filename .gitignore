@@ -48,6 +48,28 @@ coverage/
 # Build artifacts
 *.tgz
 
+# Backend Functions
+# Supabase CLI
+.supabase/      
+.supabase/.db/       
+.supabase/config.toml  
+
+# Environment files adicionales
+.env.local
+.env.*.local
+
+# Supabase CLI extras
+.branches
+.temp
+config.toml
+.npmrc
+deno.json
+
+# dotenvx / environment keys
+.env.keys
+.env.local
+.env.*.local
+
 # Frontend
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
@@ -91,6 +113,3 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
-
-
-
