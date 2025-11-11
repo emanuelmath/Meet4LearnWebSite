@@ -1,0 +1,31 @@
+<div style="padding: 20px; font-family: sans-serif;">
+  
+  <h2>Página de Hub (Pública)</h2>
+  
+  <nav>
+    <a [routerLink]="['/login']" style="margin-right: 10px;">Ir a Login</a>
+    <a [routerLink]="['/apply-teacher']">Ir a Aplicar (Docente)</a>
+  </nav>
+
+  <hr style="margin: 20px 0;">
+  <h3>Test 1: Probar Lectura de Planes (DataService)</h3>
+  
+  @if (errorMessage()) {
+    <div style="color: red; border: 1px solid red; padding: 10px;">
+      <strong>Error:</strong> {{ errorMessage() }}
+    </div>
+  }
+
+  <div style="display: flex; gap: 10px; margin-top: 10px;">
+    @for (plan of plans(); track plan.id) {
+      <div style="border: 1px solid blue; padding: 10px; flex: 1;">
+        <h4>{{ plan.name }}</h4>
+        <p>Precio: ${{ plan.price }}</p>
+        <p>Alumnos: {{ plan.max_students }}</p>
+      </div>
+    } @empty {
+      <p>Cargando planes...</p>
+    }
+  </div>
+
+</div>

@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 
-
- interface Plan{
+ export interface Plan{
     id: string;
     name: string;
     price: number;

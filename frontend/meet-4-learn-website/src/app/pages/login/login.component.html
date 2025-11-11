@@ -1,0 +1,37 @@
+<div style="padding: 20px; font-family: sans-serif;">
+
+  <h2>Página de Login (Prueba)</h2>
+
+  <form (ngSubmit)="handleLogin()">
+    <div>
+      <label for="email">Email: </label>
+      <input 
+        id="email" 
+        type="email"
+        [(ngModel)]="email" 
+        name="email"
+        required
+      />
+    </div>
+    
+    <div style="margin-top: 10px;">
+      <label for="password">Password: </label>
+      <input 
+        id="password" 
+        type="password"
+        [(ngModel)]="password" 
+        name="password"
+        required
+      />
+    </div>
+
+    <button type="submit" style="margin-top: 20px;">
+      Iniciar Sesión
+    </button>
+  </form>
+
+  <div *ngIf="errorMessage" style="color: red; margin-top: 20px; border: 1px solid red; padding: 10px;">
+    <strong>Error:</strong> {{ errorMessage() }}
+  </div>
+
+</div>
