@@ -13,4 +13,19 @@ export class SupabaseService {
   get client() {
     return this.supabase;
   }
+
+  // Devuelve el cliente para el Auth.
+  get auth() {
+    return this.supabase.auth;
+  }
+
+  // Devuelve el cliente para las funciones más complejas, como las que se usarán para el administrador.
+  get functions() {
+    return this.supabase.functions;
+  }
+
+  // Retorna un constructor de consultas para una tabla en específico.
+  from(table: string) {
+    return this.supabase.from(table);
+  }
 }

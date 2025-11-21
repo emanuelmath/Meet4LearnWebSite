@@ -14,7 +14,7 @@ function getInitials(name) {
     return "XX";
   }
 }
-console.log('Función "aprobar-docente" inicializada.');
+console.log('Función "approve-teacher" inicializada.');
 Deno.serve(async (req)=>{
   if (req.method === 'OPTIONS') {
     return new Response('ok', {

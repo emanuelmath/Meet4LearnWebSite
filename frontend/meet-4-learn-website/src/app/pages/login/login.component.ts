@@ -23,7 +23,19 @@ export class LoginComponent {
     this.errorMessage.set(null);
     try {
       await this.authService.logIn(this.email(), this.password());
-      await this.router.navigate(['/hub']); // /panel
+      
+      const role = await this.authService.getUserRole();
+
+      switch(role) {
+        case 'teacher':
+          this.router.navigate(['/dashboard-teacher']);
+        break;
+        case 'admin':
+          this.router.navigate(['/hub']); // /dashboard-admin
+        break;
+        default:
+          this.router.navigate(['/hub']);
+      }
 
     } catch (error: any) {
       this.errorMessage.set(error.message || 'Ocurrió un error desconocido.');

@@ -1,0 +1,223 @@
+/* Importación de fuente */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+
+/* 1. RESET GLOBAL PARA ANGULAR */
+/* Esto asegura que no haya espacios blancos alrededor del componente */
+:host {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. CONTENEDOR PRINCIPAL (Reemplaza al body) */
+.main-wrapper {
+    font-family: 'Oswald', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    text-align: center;
+    line-height: 1.6;
+    width: 100%;
+    min-height: 100vh;
+    background-color: white;
+    
+    /* AUMENTO DE TAMAÑO GENERAL */
+    font-size: 18px; /* Subimos de 16px a 18px base */
+
+    /* Definición de colores locales para asegurar que funcionen */
+    --color-dark-blue: #233044;
+    --color-yellow: #ffe44d; /* Amarillo brillante */
+    --color-yellow-hover: #ffd800;
+    --color-white: #ffffff;
+    --color-text-dark: #333333;
+    --color-background-gray: #f4f4f4;
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 8%; /* Más padding lateral */
+    background-color: #FEF0F0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header .logo img {
+    height: 110px; /* Logo un poco más grande */
+    width: auto; 
+    display: block;
+}
+
+/* BOTÓN PRIMARIO (Login) */
+.btn-primary {
+    background-color: var(--color-yellow);
+    border: none;
+    padding: 12px 25px; /* Botón más grande */
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'Oswald', sans-serif; /* Aseguramos la fuente */
+    cursor: pointer;
+    border-radius: 5px;
+    text-transform: uppercase;
+    color: var(--color-dark-blue);
+    box-shadow: 0 4px 0 #ffd900e3; 
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-yellow-hover);
+}
+
+/* HERO SECTION (Sección Azul) */
+.hero-section {
+    background-color: #1E3A8A;
+    padding: 100px 5%; /* Más altura */
+    color: var(--color-white); /* Texto base blanco */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-content {
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Títulos del Hero - FORZAMOS COLOR BLANCO */
+.hero-content h1 {
+    font-size: 3.5em; /* Título mucho más grande */
+    margin-bottom: 15px;
+    font-weight: 900;
+    color: #ffffff !important; /* Forzamos blanco */
+}
+
+.hero-content h2 {
+    font-size: 2em; /* Subtítulo más grande */
+    margin-top: 0;
+    margin-bottom: 40px;
+    font-weight: 700;
+    color: #e0e7ff !important; /* Blanco/Azul muy claro */
+}
+
+.hero-content p {
+    max-width: 700px;
+    margin: 0 auto 50px auto;
+    font-size: 1.3em;
+    font-weight: 400;
+    color: #ffffff;
+}
+
+/* BOTÓN SECUNDARIO (Registro) */
+.btn-secondary {
+    background-color: #ffd900e3; /* Amarillo fuerte */
+    border: none;
+    padding: 18px 40px; /* Botón de llamada a la acción grande */
+    font-size: 20px;
+    font-weight: 900;
+    font-family: 'Oswald', sans-serif;
+    cursor: pointer;
+    border-radius: 5px;
+    text-transform: uppercase;
+    color: var(--color-dark-blue);
+    letter-spacing: 1px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #ffd800;
+    transform: scale(1.05);
+}
+
+/* STUDENT SECTION */
+.student-section {
+    padding: 60px 5%;
+    background-color: var(--color-white);
+}
+
+.student-section h3 {
+    font-size: 2.2em;
+    color: var(--color-text-dark);
+    margin-bottom: 20px;
+}
+
+.student-section p {
+    max-width: 800px;
+    margin: 0 auto;
+    color: #555; /* Gris oscuro para mejor lectura */
+    font-size: 1.2em;
+}
+
+/* HOW IT WORKS */
+.how-it-works-section {
+    padding: 70px 5%;
+    background-color: var(--color-background-gray); 
+}
+
+.how-it-works-section h3 {
+    font-size: 2.2em;
+    color: var(--color-text-dark);
+    margin-bottom: 50px;
+}
+
+.steps-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px; /* Más espacio entre tarjetas */
+    flex-wrap: wrap; 
+}
+
+.step-card {
+    background-color: var(--color-yellow);
+    padding: 40px 30px;
+    border-radius: 8px;
+    width: 280px; /* Tarjetas más anchas */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.step-card h4 {
+    font-size: 1.4em;
+    text-transform: uppercase;
+    font-weight: 900;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--color-dark-blue);
+}
+
+.step-card p {
+    font-size: 1.1em;
+    color: var(--color-text-dark);
+}
+
+/* Colores específicos de tarjetas */
+.step-card.apply { background-color: #ffe44d; }
+.step-card.create { background-color: #f7e69c; }
+.step-card.teach { background-color: #ffe44d; }
+
+/* MEDIA QUERY (Móvil) */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        padding: 20px;
+    }
+    .hero-content h1 {
+        font-size: 2.5em;
+    }
+    .hero-content h2 {
+        font-size: 1.5em;
+    }
+    .steps-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .step-card {
+        width: 90%;
+        max-width: 400px;
+    }
+    .btn-secondary {
+        width: 100%;
+        padding: 15px;
+    }
+}

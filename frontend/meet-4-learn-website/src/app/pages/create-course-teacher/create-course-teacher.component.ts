@@ -1,0 +1,11 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-create-course-teacher',
+  imports: [],
+  templateUrl: './create-course-teacher.component.html',
+  styleUrl: './create-course-teacher.component.css'
+})
+export class CreateCourseTeacherComponent {
+
+}
