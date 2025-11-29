@@ -71,7 +71,6 @@ export class CourseService {
     // La función RPC devuelve el curso recién creado
     return data as Course;
   }
-
    async getCourseById(courseId: number) {
     const userId = this.authService.getCurrentUserId();
     if (!userId) throw new Error('Usuario no autenticado');
