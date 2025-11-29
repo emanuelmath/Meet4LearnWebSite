@@ -101,12 +101,12 @@
 
                     <label class="form-label">DESCRIPCIÓN</label>
                     <textarea class="textarea-description filled-input" 
-                              [(ngModel)]="courseDescription" name="description"
+                              [(ngModel)]="newCourse().description" name="description"
                               placeholder="Describe brevemente de qué trata tu curso..."></textarea>
 
                     <div class="metadata-grid">
                         <div class="input-group">
-                            <label class="form-label">MATERIA / CATEGORÍA</label>
+                            <label class="form-label">CATEGORÍA</label>
                             <div class="custom-select-wrapper filled-input">
                                 <input type="text" class="custom-input-transparent" 
                                        [(ngModel)]="newCourse().category" name="subject" 

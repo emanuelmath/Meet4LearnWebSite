@@ -1,1 +1,86 @@
-<p>subscriptions-teacher works!</p>
+<div class="main-wrapper">
+
+  <div class="page-header-centered">
+    <h2 class="page-title">MIS SUSCRIPCIONES</h2>
+    
+    <div class="top-controls-container">
+      <div class="cycle-switch">
+        <button (click)="selectedCycle.set('monthly')" [class.active]="selectedCycle() === 'monthly'">MENSUAL</button>
+        <button (click)="selectedCycle.set('annual')" [class.active]="selectedCycle() === 'annual'">ANUAL <span class="badge-save">-15%</span></button>
+      </div>
+
+      <div class="balance-badge">
+        <span class="label">TU SALDO:</span>
+        @if (myProfile()) {
+          <span class="amount">${{ myProfile()?.balance | number:'1.2-2' }}</span>
+          <a [routerLink]="['/panel-teacher/profile']" class="btn-recharge">+</a>
+        }
+      </div>
+    </div>
+  </div>
+
+  @if (errorMessage()) { <div class="alert-box error">{{ errorMessage() }} <span class="close-btn" (click)="errorMessage.set(null)">×</span></div> }
+  @if (successMessage()) { <div class="alert-box success">{{ successMessage() }} <span class="close-btn" (click)="successMessage.set(null)">×</span></div> }
+
+  <div class="cards-container">
+    @for (plan of allPlans(); track plan.id; let i = $index) {
+      <div class="pricing-card" [ngClass]="{'style-blue': i === 0, 'style-yellow': i === 1, 'style-green': i >= 2}">
+        
+        <div class="ribbon-wrapper">
+          <div class="ribbon">
+            <span class="ribbon-sub">{{ i === 0 ? 'DESCUBRE' : (i === 1 ? 'CRECE' : 'EXPANDE') }}</span>
+            @if (plan.price_monthly === 0) {
+              <h3 class="ribbon-main">GRATIS</h3>
+            } @else {
+              <div class="price-stack">
+                <div class="price-row" [class.highlight]="selectedCycle() === 'monthly'"><span class="currency">$</span>{{ plan.price_monthly }} /MES</div>
+                <div class="price-row" [class.highlight]="selectedCycle() === 'annual'"><span class="currency">$</span>{{ plan.price_annual }} /AÑO</div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="card-type-badge">{{ i === 0 ? 'PREDETERMINADO' : 'COMPRA DIRECTA' }}</div>
+
+        <ul class="features-list">
+          <li><div class="bullet-circle"></div><p>Máximo <strong>{{ plan.max_active }} cursos</strong>.</p></li>
+          <li><div class="bullet-circle"></div><p>Cupo <strong>{{ plan.max_students }} estudiantes</strong>.</p></li>
+          <li><div class="bullet-circle"></div><p>Comisión <strong>{{ (plan.commission_rate * 100).toFixed(0) }}%</strong>.</p></li>
+        </ul>
+
+        <div class="card-footer">
+          
+          @if (isMyCurrentPlanAndCycle(plan)) {
+            <button class="btn-card disabled">PLAN ACTUAL</button>
+            
+            <div class="expiry-date">
+               @if (plan.price_monthly === 0) {
+                 No vence
+               } @else if (mySubscription()?.expiresAt) {
+                 Vence: {{ mySubscription()?.expiresAt | date:'dd/MM/yyyy' }}
+               }
+            </div>
+          
+          } @else if (mySubscription()?.plan?.id === plan.id) {
+             <button class="btn-card disabled lock-cursor" title="No puedes cambiar de ciclo hasta que venza tu plan actual">
+               TIENES EL {{ getSubscriptionCycle(mySubscription()!) === 'monthly' ? 'MENSUAL' : 'ANUAL' }}
+             </button>
+             <div class="expiry-date">(Espera a que venza para cambiar)</div>
+
+          } @else if (hasActivePaidSubscription()) {
+            <button class="btn-card disabled lock-cursor" title="Debes esperar a que termine tu plan actual">NO DISPONIBLE</button>
+            <div class="expiry-date">(Tienes otro plan activo)</div>
+
+          } @else {
+            @if (plan.price_monthly === 0) {
+               <button class="btn-card disabled">ACTIVADO</button>
+            } @else {
+              <button class="btn-card hover-effect" (click)="handleBuyPlan(plan.id, selectedCycle(), selectedCycle() === 'monthly' ? plan.price_monthly : plan.price_annual)">SUSCRIBIRSE</button>
+            }
+          }
+        </div>
+
+      </div>
+    }
+  </div>
+</div>

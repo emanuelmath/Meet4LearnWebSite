@@ -15,6 +15,17 @@ export interface SavedPaymentMethod {
 
 export type AddCardPayload = Omit<SavedPaymentMethod, 'id' | 'user_id'>;
 
+export interface ActiveSubscription {
+  expiresAt: string;
+  itemId?: string; 
+  plan: {
+    id: string;
+    name: string;
+    price_monthly: number;
+    price_annual: number;
+  };
+}
+
 
 @Injectable({
   providedIn: 'root'

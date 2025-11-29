@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 
- export interface Plan{
-    id: string;
-    name: string;
-    price: number;
-    max_students: number;
-    max_active: number;
-    commission_rate: number;
- }
+export interface Plan {
+  id: string;
+  name: string;
+  max_students: number;
+  max_active: number;
+  commission_rate: number;
+  price_monthly: number;
+  price_annual: number;
+}
 
 @Injectable({
   providedIn: 'root'

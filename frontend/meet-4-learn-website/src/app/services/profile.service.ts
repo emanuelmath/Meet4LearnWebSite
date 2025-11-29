@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { AuthService } from './auth.service'; 
+import { ActiveSubscription } from './payment.service';
 
 export interface Profile {
   id?: string;
@@ -63,26 +64,37 @@ export class ProfileService {
     return data as Profile;
   }
 
-  //Obtiene la propia suscripción.
+  //Obtener suscripción propia.
   async getMySubscription() {
     const userId = this.authService.getCurrentUserId();
     if (!userId) throw new Error('Usuario no autenticado');
 
-    const { data, error } = await this.supabaseService.client
+    const subQuery = await this.supabaseService.client
       .from('teacher_subs')
       .select(`
         "expiresAt", 
-        plan: "planId" ( id, name ) 
+        plan: "planId" ( id, name, price_monthly, price_annual ) 
       `)
       .eq('"teacherId"', userId)
-      .single(); 
+      .maybeSingle(); 
 
-    if (error && error.code !== 'PGRST116') {
+    if (subQuery.error) throw subQuery.error;
+    if (!subQuery.data) return null; 
 
-      throw error;
-    }
+    const transQuery = await this.supabaseService.client
+      .from('transactions')
+      .select('"itemId"') 
+      .eq('"userId"', userId) 
+      .order('id', { ascending: false }) 
+      .limit(1)
+      .maybeSingle();
+
+    const activeSub: ActiveSubscription = {
+      expiresAt: subQuery.data.expiresAt,
+      plan: subQuery.data.plan as any,
+      itemId: transQuery.data?.itemId || '' 
+    };
     
-    return data; 
+    return activeSub; 
   }
-  
 }
