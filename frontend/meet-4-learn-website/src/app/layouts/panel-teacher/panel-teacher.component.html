@@ -1,0 +1,94 @@
+<div class="dashboard-container">
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="../../../assets/LogoMeet4LearnHD.png" alt="Logo Meet4Learn" class="logo-sidebar">
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a [routerLink]="['/panel-teacher/dashboard-teacher']" routerLinkActive="active" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>INICIO</span>
+            </a>
+
+            <div class="dropdown-container">
+
+                <div class="nav-item cursos-dropdown-btn"
+                     (click)="toggleCoursesDropdown()"
+                     [class.active]="isCoursesDropdownOpen() || rla.isActive">
+
+                    <div style="pointer-events: none;" routerLinkActive #rla="routerLinkActive"></div>
+
+                    <div class="nav-label">
+                        <i class="fas fa-book"></i>
+                        <span>CURSOS</span>
+                    </div>
+
+                    <i class="fas"
+                       [class.fa-caret-down]="!isCoursesDropdownOpen()"
+                       [class.fa-caret-up]="isCoursesDropdownOpen()"></i>
+                </div>
+
+                <div class="dropdown-content" [class.show]="isCoursesDropdownOpen()">
+
+    <a [routerLink]="['/panel-teacher/courses']"
+       routerLinkActive="active-sub"
+       class="dropdown-item action-item">
+        VER TODOS LOS CURSOS
+    </a>
+
+    <div class="dropdown-divider"></div>
+
+    @if (isLoading()) {
+        <div class="dropdown-item" style="cursor: default; color: #888;">
+            <i class="fas fa-spinner fa-spin"></i> Cargando cursos...
+        </div>
+    } 
+    @else {
+        @if (previewCourses().length > 0) {
+            @for (course of previewCourses(); track course.id) {
+                <div class="dropdown-item course-item"
+                     (click)="goToCourse(course.id)" 
+                     [routerLink]="['/panel-teacher/course', course.id]"
+                     routerLinkActive="active-sub">
+                    {{ course.name }}
+                </div>
+            }
+            } @else {
+                        <span class="dropdown-empty">Sin cursos recientes</span>
+                    }
+                }
+                </div>
+            </div>
+
+            <a [routerLink]="['/panel-teacher/calendar']" routerLinkActive="active" class="nav-item">
+                <i class="far fa-calendar-alt"></i>
+                <span>CALENDARIO</span>
+            </a>
+
+            <a [routerLink]="['/panel-teacher/subscriptions']" routerLinkActive="active" class="nav-item">
+                <i class="fas fa-star"></i>
+                <span>SUSCRIPCIONES</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a [routerLink]="['/panel-teacher/profile']" class="user-profile-btn">
+                <i class="fas fa-user-circle"></i>
+                <span>USUARIO</span>
+            </a>
+
+            @if (currentUser()) {
+                <div class="user-mini-info">
+                    {{ currentUser()?.email }}
+                </div>
+            }
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <router-outlet></router-outlet>
+    </main>
+
+</div>

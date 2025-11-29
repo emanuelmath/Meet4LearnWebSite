@@ -5,21 +5,23 @@ import { from, map } from 'rxjs';
 
 export const redirectGuard: CanActivateFn = (route, state) => {
    const authService = inject(AuthService);
-  const router = inject(Router);
+   const router = inject(Router);
 
   return from(authService.getUserRole()).pipe(
     map(role => {
-      if (!role) return true; 
+
+      if (!role) return true;
 
       if (role === 'teacher') {
-        return router.createUrlTree(['/dashboard-teacher']);
+        return router.createUrlTree(['/panel-teacher']);
       }
 
       if (role === 'admin') {
-        return router.createUrlTree(['/hub']); //dashboard-admin
+        return router.createUrlTree(['/hub']); // panel-admin
       }
 
-      throw console.error(); // Si no se cumple ninguno, mejorar luego qué excepción lanzar.
+      authService.signOut();
+      return router.createUrlTree(['/login']);
     })
   );
 };

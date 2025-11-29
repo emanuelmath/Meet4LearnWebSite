@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-create-module-teacher',
   imports: [],
+  standalone: true,
   templateUrl: './create-module-teacher.component.html',
   styleUrl: './create-module-teacher.component.css'
 })
