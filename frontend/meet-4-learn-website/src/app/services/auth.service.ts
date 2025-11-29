@@ -67,5 +67,23 @@ export class AuthService {
   return data.role;
 }
 
+  async signUpTeacher(email: string, password: string, fullName: string, dui: string) {
+    const { data, error } = await this.supabaseService.client.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          full_name: fullName,
+          role: 'teacher',
+          DUI: dui
+        }
+      }
+    });
+
+    if (error) throw error;
+        
+    return data;
+  }
+
   
 }

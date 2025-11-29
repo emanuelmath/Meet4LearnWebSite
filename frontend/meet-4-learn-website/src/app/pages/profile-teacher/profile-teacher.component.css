@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+
+:host {
+    display: block;
+    width: 100%;
+    font-family: 'Oswald', sans-serif;
+    --color-dark-blue: #233044;
+    --color-light-pink: #ffeef2;
+    --color-yellow: #ffe44d;
+    --color-blue-active: #70b3ff;
+    --color-red: #ff4d4d;
+    --color-white: #ffffff;
+    --color-gray: #f5f5f5;
+    --color-text-dark: #333333;
+    --color-soft-gray: #e0e0e0;
+}
+
+* { box-sizing: border-box; }
+
+/* ESTILOS GENERALES DEL PERFIL (Igual que antes) */
+.header-banner {
+    background-color: var(--color-blue-active); color: var(--color-dark-blue);
+    padding: 20px; font-size: 1.5em; font-weight: 700; text-align: center;
+    text-transform: uppercase; border-bottom: 5px solid var(--color-dark-blue);
+    margin-bottom: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.profile-dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+.column-left, .column-right { display: flex; flex-direction: column; gap: 30px; }
+.card { border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; background: #fff; }
+
+.profile-info-card { background-color: var(--color-yellow); padding: 40px; color: var(--color-dark-blue); }
+.profile-header-info { display: flex; align-items: center; margin-bottom: 20px; }
+.profile-picture { width: 120px; height: 120px; border-radius: 50%; border: 5px solid var(--color-dark-blue); object-fit: cover; background-color: #fff; }
+.btn-edit-photo { position: absolute; bottom: 5px; right: 5px; background-color: var(--color-dark-blue); color: var(--color-yellow); border: 3px solid var(--color-dark-blue); border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.user-name { font-size: 2.5em; font-weight: 700; margin: 0 0 5px 0; line-height: 1; }
+.user-role { font-size: 1.2em; font-weight: 500; opacity: 0.8; margin: 0; }
+.section-divider { border: none; height: 2px; background-color: var(--color-dark-blue); opacity: 0.3; margin: 30px 0; }
+
+/* Inputs generales de la página */
+.form-label { text-transform: uppercase; font-weight: 600; margin-bottom: 5px; font-size: 0.85em; color: #555; }
+.input-field { background-color: var(--color-white); border: 1px solid var(--color-soft-gray); padding: 10px 15px; border-radius: 5px; font-size: 1em; color: var(--color-text-dark); font-family: 'Oswald', sans-serif; font-weight: 500; width: 100%; }
+.input-field:read-only { background-color: #fffdf0; color: #666; }
+
+/* Billetera */
+.wallet-subscription-card { padding: 30px; border-top: 5px solid var(--color-dark-blue); }
+.card-title { font-size: 1.8em; font-weight: 700; margin: 0 0 20px 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.info-section { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px dashed #eee; }
+.section-value { font-weight: 700; color: var(--color-blue-active); }
+.subscription-status { font-size: 0.9em; padding: 5px 10px; border-radius: 5px; font-weight: 700; background-color: #37c74d; color: #fff; }
+
+/* Tarjetas */
+.cards-section { background-color: var(--color-dark-blue); padding: 20px; color: white; }
+.card-section-title { color: var(--color-yellow); text-align: center; margin-bottom: 20px; }
+
+.credit-card {
+    background: linear-gradient(135deg, #182333 0%, #4a5d7c 100%);
+    border-radius: 10px; padding: 20px; margin-bottom: 15px; position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+.card-number { font-family: monospace; font-size: 1.4em; letter-spacing: 2px; margin: 25px 0 15px 0; }
+.card-details-row { display: flex; justify-content: space-between; font-size: 0.8em; text-transform: uppercase; }
+.card-type-icon { font-size: 2em; color: var(--color-yellow); display: block; margin-bottom: 5px; }
+
+/* BOTÓN ELIMINAR (Posición absoluta superior derecha) */
+.btn-delete-card-absolute {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #ff6b6b;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 10;
+}
+.btn-delete-card-absolute:hover { background: #ff4d4d; color: white; transform: scale(1.1); }
+
+.empty-cards-state { text-align: center; padding: 30px 20px; color: rgba(255,255,255,0.6); border: 2px dashed rgba(255,255,255,0.2); border-radius: 8px; font-size: 0.9em; }
+.btn-card-action { background-color: var(--color-yellow); color: var(--color-dark-blue); border: none; padding: 10px; width: 100%; font-weight: 700; border-radius: 5px; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: transform 0.1s; }
+.btn-card-action:active { transform: translateY(1px); }
+
+.btn-logout { background-color: var(--color-red); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 0 #b33939; }
+.btn-logout:active { transform: translateY(2px); box-shadow: 0 2px 0 #b33939; }
+
+.alert-box { padding: 10px; margin-bottom: 20px; border-radius: 5px; text-align: center; }
+.alert-box.error { background: #ffdcdc; color: #a00; border: 1px solid #faa; }
+.alert-box.success { background: #dcffdc; color: #060; border: 1px solid #afa; }
+
+.btn-save { background: var(--color-blue-active); color: var(--color-dark-blue); border: none; padding: 10px 20px; border-radius: 5px; font-weight: 700; cursor: pointer; }
+
+/* --- ESTILOS DEL NUEVO MODAL (Adaptado de tu diseño) --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.8); z-index: 2000;
+    display: flex; justify-content: center; align-items: center; backdrop-filter: blur(4px);
+}
+
+.payment-card-modal {
+    width: 100%; max-width: 1000px; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); display: flex; background-color: white;
+    margin: 20px; animation: popIn 0.3s ease;
+}
+
+.card-image-section {
+    background-color: var(--color-dark-blue); display: flex; flex-direction: column;
+    justify-content: center; align-items: center; padding: 40px; width: 35%;
+    min-height: 400px; color: white; text-align: center;
+}
+
+.form-section {
+    background-color: var(--color-yellow); padding: 40px; color: var(--color-dark-blue); width: 65%;
+}
+
+.credit-card-svg {
+    width: 100%; max-width: 300px; height: auto; margin-bottom: 20px;
+    transform: rotate(5deg); filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+}
+.credit-card-svg text.card-number-text {
+    fill: #111 !important;         /* Más contraste */
+    font-size: 26px !important;    /* Más grande */
+    font-weight: bold !important;  /* Más grueso */
+    letter-spacing: 3px;           /* Separa los dígitos */
+}
+
+.credit-card-svg text.card-name-text,
+.credit-card-svg text.card-exp-text {
+    fill: #222 !important;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* Inputs específicos del modal (estilo "custom-input") */
+.custom-input {
+    width: 100%; background-color: white; border: 1px solid var(--color-soft-gray);
+    padding: 12px 16px; border-radius: 6px; font-size: 1em; color: var(--color-dark-blue);
+    font-weight: 500; transition: border-color 0.2s; font-family: 'Oswald', sans-serif;
+}
+.custom-input:focus { outline: none; border-color: var(--color-dark-blue); box-shadow: 0 0 0 2px rgba(35, 48, 68, 0.3); }
+
+.input-group { margin-bottom: 20px; }
+.input-group label { display: block; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; font-size: 0.9em; }
+
+.meta-data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.btn-container { display: flex; gap: 15px; margin-top: 30px; justify-content: flex-end; }
+
+.btn-base { border: none; padding: 15px 30px; font-size: 1.1em; font-weight: 700; cursor: pointer; border-radius: 5px; text-transform: uppercase; transition: all 0.1s ease; }
+.btn-confirm { background-color: var(--color-blue-active); color: var(--color-dark-blue); box-shadow: 0 4px 0 #4a82c4; }
+.btn-confirm:active { transform: translateY(2px); box-shadow: 0 2px 0 #4a82c4; }
+.btn-cancel { background-color: var(--color-dark-blue); color: white; box-shadow: 0 4px 0 #182333; }
+.btn-cancel:active { transform: translateY(2px); box-shadow: 0 2px 0 #182333; }
+
+@keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+    .profile-dashboard-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+    .payment-card-modal { flex-direction: column; max-width: 450px; }
+    .card-image-section, .form-section { width: 100%; }
+    .card-image-section { padding: 30px 20px; min-height: auto; }
+    .form-section { padding: 30px 20px; }
+    .credit-card-svg { transform: none; }
+    .meta-data-grid { grid-template-columns: 1fr; }
+}

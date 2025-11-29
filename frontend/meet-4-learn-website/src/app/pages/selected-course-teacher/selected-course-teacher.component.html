@@ -1,1 +1,129 @@
-<p>selected-course-teacher works!</p>
+<!-- HEADER DE NAVEGACIÓN -->
+<div class="nav-header">
+    <a [routerLink]="['/panel/courses']" class="btn-back">
+        <i class="fas fa-arrow-left"></i> VOLVER A MIS CURSOS
+    </a>
+</div>
+
+@if (course()) {
+    <div class="course-detail-container">
+        
+        <!-- PANEL DE DETALLES DEL CURSO -->
+        <div class="course-detail-panel">
+            
+            <!-- Encabezado del Panel (Nombre y Alumnos) -->
+            <div class="course-header-grid">
+                <div class="header-name-box">
+                    {{ course()?.name }}
+                </div>
+                <div class="header-status-box" 
+                     [class.bg-green]="course()?.status === 'activo' || course()?.status === 'approved'"
+                     [class.bg-orange]="course()?.status === 'en_revision' || course()?.status === 'pending'">
+                    ESTADO: {{ course()?.status | uppercase }}
+                </div>
+            </div>
+
+            <!-- Descripción y Detalles Extra -->
+            <div class="course-description-box">
+                <div class="description-content">
+                    <h3 class="description-title">DESCRIPCIÓN DEL CURSO</h3>
+                    <p class="description-text">
+                        Esta es la descripción del curso de {{ course()?.description }}. Aquí aprenderás todo lo necesario para dominar el tema.
+                    </p>
+                </div>
+                
+                <div class="details-sidebar">
+                    <div class="detail-item">
+                        <i class="fas fa-tag"></i>
+                        <span>PRECIO: ${{ course()?.price }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>INICIO: {{ course()?.start_date | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="far fa-calendar-check"></i>
+                        <span>FIN: {{ course()?.finish_date | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL DE MÓDULOS -->
+        <div class="modules-panel">
+            <div class="modules-header">
+                <h2 class="modules-title">MÓDULOS DEL CURSO</h2>
+                <span class="modules-count">{{ modules().length }} CLASES PROGRAMADAS</span>
+            </div>
+
+            <div class="modules-grid">
+                @for (mod of modules(); track mod.id; let i = $index) {
+                    <!-- Tarjeta de Módulo -->
+                    <div class="module-card" [class.card-yellow]="i % 2 === 0" [class.card-blue]="i % 2 !== 0">
+                        <div class="module-number">{{ i + 1 }}</div>
+                        <div class="module-info">
+                            <h4>{{ mod.title }}</h4>
+                            <p>{{ mod.description }}</p>
+                            <small><i class="far fa-clock"></i> {{ mod.scheduled_at | date:'medium' }}</small>
+                        </div>
+                        <button class="btn-module-options">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                } @empty {
+                    <div class="empty-modules">
+                        <p>No hay módulos creados aún.</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BOTONES FLOTANTES DE ACCIÓN -->
+    <div class="floating-actions">
+        <button class="btn-action btn-create-module" (click)="toggleModal()">
+            <i class="fas fa-plus"></i> CREAR MÓDULO
+        </button>
+        <button class="btn-action btn-start-meeting">
+            <i class="fas fa-video"></i> INICIAR REUNIÓN
+        </button>
+    </div>
+} @else {
+    <p style="text-align: center; padding: 50px;">Cargando información del curso...</p>
+}
+
+<!-- ========================================== -->
+<!-- MODAL: CREAR MÓDULO                        -->
+<!-- ========================================== -->
+@if (isModalOpen()) {
+    <div class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <span>NUEVO MÓDULO</span>
+                <button class="btn-close" (click)="toggleModal()"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="modal-body">
+                <form (ngSubmit)="handleCreateModule()">
+                    
+                    <label class="form-label">TÍTULO DEL MÓDULO</label>
+                    <input type="text" class="input-field" [(ngModel)]="newModule().title" name="title" placeholder="Ej: Introducción a Variables" required>
+
+                    <label class="form-label">DESCRIPCIÓN</label>
+                    <textarea class="input-field textarea" [(ngModel)]="newModule().description" name="description" placeholder="Breve resumen de la clase..." required></textarea>
+
+                    <label class="form-label">FECHA Y HORA (CLASE EN VIVO)</label>
+                    <input type="datetime-local" class="input-field" [(ngModel)]="newModule().scheduled_at" name="scheduledAt" required>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-cancel" (click)="toggleModal()">CANCELAR</button>
+                        <button type="submit" class="btn-submit" [disabled]="isLoading()">
+                            {{ isLoading() ? 'GUARDANDO...' : 'GUARDAR MÓDULO' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}

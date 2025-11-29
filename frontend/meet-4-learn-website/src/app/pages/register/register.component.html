@@ -1,1 +1,97 @@
-<p>register works!</p>
+<div class="register-wrapper">
+
+    <header class="register-header">
+        <div class="logo">
+            <!-- Asegúrate de que la ruta de la imagen sea correcta en tu proyecto -->
+            <img src="../../../assets/LogoMeet4LearnHD.png" alt="Logo de Meet4Learn"> 
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="register-card">
+            <h2>Registro de Docente</h2>
+            <p class="subtitle">
+                Tu cuenta se creará con el plan 'Descubre' automáticamente.
+            </p>
+
+            <form (ngSubmit)="handleSubmit()" class="register-form">
+                
+                <!-- CAMPO 1: Nombre Completo -->
+                <label for="fullName">Nombre Completo</label>
+                <input 
+                    type="text" 
+                    id="fullName" 
+                    name="fullName" 
+                    [ngModel]="fullName()" 
+                    (ngModelChange)="fullName.set($event)"
+                    required
+                    placeholder="Tu nombre completo"
+                >
+
+                <!-- CAMPO 2: Email -->
+                <label for="email">Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    [ngModel]="email()" 
+                    (ngModelChange)="email.set($event)"
+                    required
+                    placeholder="ejemplo@correo.com"
+                >
+
+                <!-- CAMPO 3: DUI -->
+                <label for="dui">DUI (sin guiones)</label>
+                <input 
+                    type="text" 
+                    id="dui" 
+                    name="dui" 
+                    [ngModel]="dui()" 
+                    (ngModelChange)="dui.set($event)"
+                    required
+                    placeholder="Solo números"
+                >
+
+                <!-- CAMPO 4: Contraseña -->
+                <label for="password">Contraseña</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    [ngModel]="password()" 
+                    (ngModelChange)="password.set($event)"
+                    required
+                    placeholder="Mínimo 6 caracteres"
+                >
+
+                <!-- CAMPO 5: Confirmar Contraseña (NUEVO) -->
+                <label for="confirmPassword">Confirmar Contraseña</label>
+                <input 
+                    type="password" 
+                    id="confirmPassword" 
+                    name="confirmPassword" 
+                    [ngModel]="confirmPassword()" 
+                    (ngModelChange)="confirmPassword.set($event)"
+                    required
+                    placeholder="Repite tu contraseña"
+                >
+
+                <button type="submit" class="btn-register">REGISTRARME COMO DOCENTE</button>
+            </form>
+            
+            <!-- Mensaje de Error (Se muestra solo si errorMessage tiene valor) -->
+            <div *ngIf="errorMessage()" class="error-alert">
+                <strong>Error:</strong> {{ errorMessage() }}
+            </div>
+
+            <!-- Mensaje de Éxito (Se muestra solo si successMessage tiene valor) -->
+            <div *ngIf="successMessage()" class="success-alert">
+                <strong>Éxito:</strong> {{ successMessage() }}
+            </div>
+            
+            <!-- Enlace de retorno -->
+            <a [routerLink]="['/hub']" class="return-hub-link">&larr; Volver al Hub</a>
+        </div>
+    </div>
+
+</div>

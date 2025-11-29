@@ -1,2 +1,76 @@
-<p>dashboard-teacher works!</p>
-<button (click)="closeSession()"> Cerrar Sesión </button>
+<div class="header-banner">
+    HOLA, @if(myProfile()) { {{ myProfile()?.full_name }} } @else { ... }
+</div>
+
+@if (errorMessage()) {
+    <div class="alert-box error"><strong>Error:</strong> {{ errorMessage() }}</div>
+}
+@if (successMessage()) {
+    <div class="alert-box success"><strong>Éxito:</strong> {{ successMessage() }}</div>
+}
+
+<div class="dashboard-grid">
+
+    <div class="panel current-courses-panel">
+        <h3 class="panel-title-blue">
+            MIS CURSOS 
+            <span class="count-indicator">
+                {{ stats().total }} / {{ courseLimit() }} CREADOS
+            </span>
+        </h3>
+        
+        <div class="course-list">
+            @for (course of myCourses(); track course.id) {
+                <div class="course-card yellow-card">
+                    <div class="card-content">
+                        <h4>{{ course.name }}</h4>
+                        <p class="course-subject">{{ course.category }}</p>
+                        
+                        <div class="status-badge" 
+                             [class.status-green]="course.status === 'activo'"
+                             [class.status-orange]="course.status === 'en_revision'"
+                             [class.status-red]="course.status === 'baneado'"
+                             [class.status-gray]="course.status === 'finalizado'">
+                            {{ course.status.replace('_', ' ') | uppercase }}
+                        </div>
+                    </div>
+
+                    <a [routerLink]="['/panel-teacher', 'course', course.id]" class="btn-view-course">
+                        GESTIONAR CURSO
+                    </a>
+                </div>
+            } @empty {
+                <div class="empty-state">
+                    <p>No tienes cursos creados todavía.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="panel stats-panel">
+        <h3 class="panel-title-yellow">ESTADÍSTICAS</h3>
+        <div class="stats-content blue-box">
+            <div class="stat-item">
+                <span class="stat-label">TU PLAN</span>
+                <span class="stat-value-text">{{ currentPlanName() | uppercase }}</span>
+            </div>
+            <div class="stat-divider"></div>
+
+            <div class="stat-item">
+                <span class="stat-label">TOTAL CURSOS</span>
+                <span class="stat-number">{{ stats().total }}</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-label">ACTIVOS</span>
+                <span class="stat-number">{{ stats().active }}</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-label">EN REVISIÓN</span>
+                <span class="stat-number">{{ stats().pending }}</span>
+            </div>
+        </div>
+    </div>
+
+</div>

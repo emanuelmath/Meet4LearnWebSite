@@ -1,0 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+
+/* 1. RESET DEL COMPONENTE */
+:host {
+    display: block;
+    width: 100%;
+    min-height: 100vh;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* 2. WRAPPER PRINCIPAL */
+.register-wrapper {
+    font-family: 'Oswald', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+
+    /* Variables de color */
+    --color-dark-blue: #233044;
+    --color-yellow: #ffe44d;
+    --color-light-pink: #ffeef2; 
+    --color-white: #ffffff;
+    --color-text-dark: #333333;
+    --color-link: #4a90e2; 
+    
+    /* Alertas */
+    --color-error-bg: #fee2e2;
+    --color-error-text: #dc2626;
+    --color-success-bg: #dcfce7;
+    --color-success-text: #166534;
+
+    background-color: var(--color-white);
+}
+
+.register-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5%;
+    background-color: var(--color-light-pink); 
+    width: 100%;
+}
+
+.register-header .logo img {
+    height: 80px; 
+    width: auto; 
+    display: block;
+}
+
+.main-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    width: 100%;
+}
+
+.register-card {
+    background-color: var(--color-light-pink);
+    padding: 50px 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.register-card h2 {
+    color: var(--color-dark-blue);
+    font-size: 1.8em;
+    font-weight: 600;
+    margin-bottom: 10px; /* Reducido para dar espacio al subtitulo */
+    margin-top: 0;
+    text-transform: uppercase;
+}
+
+.subtitle {
+    font-family: sans-serif;
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 30px;
+    margin-top: 0;
+}
+
+.register-form {
+    text-align: left;
+}
+
+.register-form label {
+    display: block;
+    color: var(--color-dark-blue);
+    font-size: 1em;
+    font-weight: 600;
+    margin-bottom: 8px;
+    margin-top: 20px;
+    text-transform: uppercase;
+}
+
+.register-form input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    outline: none;
+    transition: border-color 0.3s;
+    font-family: sans-serif;
+}
+
+.register-form input:focus {
+    border-color: var(--color-dark-blue);
+}
+
+.btn-register {
+    display: block; 
+    width: 100%; 
+    max-width: 280px; /* Un poco más ancho para el texto largo */
+    margin: 40px auto 0 auto; 
+    
+    background-color: var(--color-dark-blue); 
+    border: none;
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    border-radius: 50px; 
+    text-transform: uppercase;
+    color: var(--color-white);
+    letter-spacing: 1px;
+    box-shadow: 0 5px 0 #1b263b;
+    transition: all 0.2s;
+    font-family: 'Oswald', sans-serif;
+}
+
+.btn-register:hover {
+    background-color: #384964;
+    transform: translateY(-2px);
+}
+
+.btn-register:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #1b263b;
+}
+
+/* ALERTAS */
+.error-alert, .success-alert {
+    margin-top: 25px;
+    padding: 15px;
+    border-radius: 5px;
+    font-family: sans-serif;
+    font-size: 0.95em;
+    text-align: center;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.error-alert {
+    background-color: var(--color-error-bg);
+    color: var(--color-error-text);
+    border: 1px solid var(--color-error-text);
+}
+
+.success-alert {
+    background-color: var(--color-success-bg);
+    color: var(--color-success-text);
+    border: 1px solid var(--color-success-text);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.return-hub-link {
+    display: block;
+    margin-top: 20px; 
+    color: var(--color-dark-blue);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1em;
+    transition: color 0.3s;
+    cursor: pointer;
+}
+
+.return-hub-link:hover {
+    color: var(--color-link);
+    text-decoration: underline;
+}
+
+@media (max-width: 550px) {
+    .register-card {
+        padding: 30px 20px;
+    }
+    .btn-register {
+        width: 100%; 
+        font-size: 16px;
+    }
+}

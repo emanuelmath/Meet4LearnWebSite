@@ -1,1 +1,155 @@
-<p>courses-teacher works!</p>
+<!-- HEADER DE LA PÁGINA -->
+<div class="page-header-centered">
+    <h2 class="page-title">GESTIÓN DE CURSOS</h2>
+    <div class="plan-info-badge">
+        <span>{{ currentPlanName() | uppercase }}</span>
+        <span class="limit-counter">{{ myCourses().length }} / {{ courseLimit() }} CREADOS</span>
+    </div>
+</div>
+
+<!-- Mensajes Globales -->
+@if (errorMessage()) {
+    <div class="alert-box error">{{ errorMessage() }}</div>
+}
+@if (successMessage()) {
+    <div class="alert-box success">{{ successMessage() }}</div>
+}
+
+<!-- LISTADO DE CURSOS (GRID) -->
+<div class="courses-grid">
+    @for (course of myCourses(); track course.id) {
+        <!-- TARJETA AMARILLA (Estilo de Marca) -->
+        <div class="course-card yellow-card">
+            
+            <!-- Cabecera de la Tarjeta -->
+            <div class="card-header">
+                <span class="course-id">ID: {{ course.id }}</span>
+                <!-- Badge de Estado -->
+                <div class="status-badge" 
+                     [class.status-active]="course.status === 'activo' || course.status === 'approved'"
+                     [class.status-pending]="course.status === 'en_revision' || course.status === 'pending'"
+                     [class.status-banned]="course.status === 'baneado' || course.status === 'rejected'">
+                    {{ course.status.replace('_', ' ') | uppercase }}
+                </div>
+            </div>
+
+            <!-- Cuerpo de la Tarjeta -->
+            <div class="card-body">
+                <h3 class="course-title">{{ course.name }}</h3>
+                <p class="course-subject">{{ course.category }}</p>
+                
+                <div class="course-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-tag"></i>
+                        <span>${{ course.price }} USD</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>{{ course.start_date | date:'dd/MM/yy' }} - {{ course.finish_date | date:'dd/MM/yy' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pie de la Tarjeta (Acciones) -->
+            <div class="card-footer">
+                <a [routerLink]="['/panel-teacher/course', course.id]" class="btn-manage">
+                    GESTIONAR MÓDULOS <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    } @empty {
+        <div class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <p>No tienes cursos creados aún.</p>
+            <button class="btn-link" (click)="toggleModal()">¡Crea tu primer curso aquí!</button>
+        </div>
+    }
+</div>
+
+<!-- BOTÓN FLOTANTE (Fixed Bottom Right) -->
+<div class="floating-actions">
+    <button class="btn-float-create" (click)="toggleModal()" [disabled]="!canCreateMore()" [class.disabled]="!canCreateMore()">
+        <i class="fas fa-plus"></i> 
+        {{ canCreateMore() ? 'NUEVO CURSO' : 'LÍMITE ALCANZADO' }}
+    </button>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL DE CREACIÓN                          -->
+<!-- ========================================== -->
+@if (isModalOpen()) {
+    <div class="modal-overlay">
+        <div class="course-form-container">
+            
+            <!-- Título Superior (Azul) -->
+            <div class="header-banner-modal">
+                <span>CREAR NUEVO CURSO</span>
+                <button type="button" class="btn-close-modal" (click)="toggleModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Cuerpo del Formulario (Amarillo) -->
+            <div class="form-body-panel">
+                
+                <form (ngSubmit)="handleCreateCourse()">
+                    
+                    <label class="form-label">TÍTULO DEL CURSO</label>
+                    <input type="text" class="input-title filled-input" 
+                           [(ngModel)]="newCourse().name" name="name" 
+                           placeholder="Ej: INTRODUCCIÓN A LA PROGRAMACIÓN" required>
+
+                    <label class="form-label">DESCRIPCIÓN</label>
+                    <textarea class="textarea-description filled-input" 
+                              [(ngModel)]="courseDescription" name="description"
+                              placeholder="Describe brevemente de qué trata tu curso..."></textarea>
+
+                    <div class="metadata-grid">
+                        <div class="input-group">
+                            <label class="form-label">MATERIA / CATEGORÍA</label>
+                            <div class="custom-select-wrapper filled-input">
+                                <input type="text" class="custom-input-transparent" 
+                                       [(ngModel)]="newCourse().category" name="subject" 
+                                       placeholder="Ej: TECNOLOGÍA" required>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="form-label">PRECIO (USD)</label>
+                            <div class="custom-price-input filled-input">
+                                <i class="fas fa-dollar-sign price-icon"></i>
+                                <input type="number" min="0" step="0.01" 
+                                       [(ngModel)]="newCourse().price" name="price" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="form-label">FECHA INICIO</label>
+                            <div class="custom-date-input filled-input">
+                                <input type="date" [(ngModel)]="newCourse().start_date" name="startDate" required>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="form-label">FECHA FIN</label>
+                            <div class="custom-date-input filled-input">
+                                <input type="date" [(ngModel)]="newCourse().finish_date" name="finishDate" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer con CANCELAR y CREAR -->
+                    <div class="form-footer">
+                        <button type="button" class="btn-cancel-course" (click)="toggleModal()">
+                            CANCELAR
+                        </button>
+                        <button type="submit" class="btn-submit-course" [disabled]="isLoading()">
+                            <i class="fas fa-check"></i> {{ isLoading() ? 'CREANDO...' : 'CREAR CURSO' }}
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+}
