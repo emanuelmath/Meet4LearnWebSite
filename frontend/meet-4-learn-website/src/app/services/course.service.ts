@@ -126,19 +126,44 @@ export class CourseService {
 
   async verifyModuleOwnership(moduleId: number): Promise<boolean> {
     const userId = this.authService.getCurrentUserId();
-    if (!userId) return false;
-
-    const { data, error } = await this.supabaseService.client
-      .from('modules')
-      .select(`id, course: courseId ( teacher_id )`)
-      .eq('id', moduleId)
-      .single();
-
-    if (error || !data || !data.course) return false;
     
-    // Doble verificación en JS
-    const course: any = data.course;
-    return course.teacher_id === userId;
+    if (!userId) {
+        console.error('VerifyOwnership: No hay usuario logueado');
+        return false;
+    }
+
+    try {
+        const { data: moduleData, error: moduleError } = await this.supabaseService.client
+            .from('modules')
+            .select('courseId') 
+            .eq('id', moduleId)
+            .single();
+
+        if (moduleError || !moduleData) {
+            console.error('VerifyOwnership: Error buscando el módulo o no existe', moduleError);
+            return false;
+        }
+
+        const courseId = moduleData.courseId;
+
+        const { data: courseData, error: courseError } = await this.supabaseService.client
+            .from('course')
+            .select('id')
+            .eq('id', courseId)
+            .eq('teacher_id', userId)
+            .single();
+
+        if (courseData) {
+            return true;
+        } else {
+            console.warn('VerifyOwnership: El curso existe, pero no pertenece a este profesor.');
+            return false;
+        }
+
+    } catch (error) {
+        console.error('VerifyOwnership: Error inesperado', error);
+        return false;
+    }
   }
 
   async getModuleDetails(moduleId: number) {

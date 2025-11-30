@@ -58,6 +58,7 @@ export class VideoCallTeacherComponent implements OnInit, OnDestroy {
 
     try {
       const isOwner = await this.courseService.verifyModuleOwnership(this.moduleId);
+      console.log(`valor de ${isOwner}`);
       if (!isOwner) {
         this.exit('Acceso denegado. No eres el propietario.');
         return;
