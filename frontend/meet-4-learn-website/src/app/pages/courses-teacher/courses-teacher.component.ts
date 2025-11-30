@@ -16,7 +16,7 @@ export class CoursesTeacherComponent implements OnInit{
 
   constructor(private courseService: CourseService, private profileService: ProfileService) {}
 
-// Datos
+  // Datos
   myCourses = signal<Course[]>([]);
 
   // Límites del Plan
@@ -33,14 +33,22 @@ export class CoursesTeacherComponent implements OnInit{
   successMessage = signal<string | null>(null);
 
   // Formulario
-  newCourse = signal<CourseCreatePayload>({
+  newCourse = signal<{
+    name: string;
+    category: string;
+    description: string;
+    price: number;
+    start_date: string; 
+    finish_date: string;
+  }>({
     name: '',
     category: '',
     description: '',
     price: 0,
-    start_date: new Date(),
-    finish_date: new Date()
+    start_date: new Date().toISOString().split('T')[0], 
+    finish_date: ''
   });
+
   courseDescription = signal('');
 
   ngOnInit() {
@@ -102,15 +110,22 @@ export class CoursesTeacherComponent implements OnInit{
       category: '',
       description: '',
       price: 0,
-      start_date: new Date(),
-      finish_date: new Date()
+      start_date: '',
+      finish_date: ''
     });
     this.courseDescription.set('');
+  }
+
+  private parseDateString(dateStr: string): Date {
+    return new Date(dateStr + 'T00:00:00');
   }
 
   async handleCreateCourse() {
     this.errorMessage.set(null);
     const form = this.newCourse();
+
+    const start = new Date(form.start_date);
+    const finish = new Date(form.finish_date);
 
     // Validaciones básicas
     if (!form.name || !form.category || !form.start_date || !form.finish_date) {
@@ -118,24 +133,54 @@ export class CoursesTeacherComponent implements OnInit{
       return;
     }
 
-    // Validación de fechas
-    if (form.finish_date < form.start_date) {
+    const startDateObj = this.parseDateString(form.start_date);
+    const finishDateObj = this.parseDateString(form.finish_date);
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+
+    if (startDateObj.getTime() < today.getTime()) {
+      this.errorMessage.set('La fecha de inicio no puede ser en el pasado.');
+      return;
+    }
+
+    if (finishDateObj.getTime() <= startDateObj.getTime()) {
       this.errorMessage.set('La fecha de finalización debe ser posterior a la de inicio.');
+      return;
+    }
+
+    const diffMs = finishDateObj.getTime() - startDateObj.getTime();
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+    if (diffDays < 7) {
+      this.errorMessage.set(`La duración es muy corta (${diffDays} días). Mínimo 7 días.`);
+      return;
+    }
+
+    if (diffDays > 30) {
+      this.errorMessage.set(`La duración excede el límite (${diffDays} días). Máximo 30 días.`);
       return;
     }
 
     try {
       this.isLoading.set(true);
 
-      const payload = {
-        ...form
+      const payload: CourseCreatePayload = {
+        name: form.name,
+        category: form.category,
+        description: form.description,
+        price: form.price,
+        start_date: startDateObj, 
+        finish_date: finishDateObj
       };
 
       const created = await this.courseService.createCourse(payload);
 
       this.myCourses.update(c => [created, ...c]);
       this.successMessage.set('Curso creado exitosamente.');
-      this.toggleModal();
+      
+      setTimeout(() => this.toggleModal(), 1000);
 
     } catch (error: any) {
       this.errorMessage.set(error.message || 'Error al crear curso.');

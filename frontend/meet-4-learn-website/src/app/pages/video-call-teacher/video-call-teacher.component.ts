@@ -7,6 +7,14 @@ import { CourseService } from '../../services/course.service';
 import { SupabaseService } from '../../services/supabase.service'; 
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { ProfileService } from '../../services/profile.service'; 
+import { 
+  Room, 
+  RoomEvent, 
+  LocalVideoTrack, 
+  RemoteParticipant, 
+  LocalParticipant,
+  Track 
+} from 'livekit-client';
 @Component({
   selector: 'app-video-call-teacher',
   imports: [CommonModule, FormsModule],
@@ -16,6 +24,7 @@ import { ProfileService } from '../../services/profile.service';
 })
 export class VideoCallTeacherComponent implements OnInit, OnDestroy {
 
+  // Exponemos mensajes para el HTML
   public messages: Signal<ChatMessage[]>;
 
   constructor(
@@ -23,7 +32,6 @@ export class VideoCallTeacherComponent implements OnInit, OnDestroy {
     private router: Router,
     private chatService: ChatService,
     private courseService: CourseService,
-    private supabase: SupabaseService,
     private profileService: ProfileService
   ) {
     this.messages = this.chatService.currentMessages;
@@ -31,9 +39,11 @@ export class VideoCallTeacherComponent implements OnInit, OnDestroy {
 
   @ViewChild('localVideo') localVideo!: ElementRef<HTMLVideoElement>;
 
+  room: Room | undefined;
+
   moduleId!: number;
   courseIdToReturn!: number;
-  courseName = signal<string>('Cargando...'); 
+  courseName = signal<string>('Conectando...'); 
   
   isMicOn = signal(true);
   isCamOn = signal(true);
@@ -42,13 +52,8 @@ export class VideoCallTeacherComponent implements OnInit, OnDestroy {
   activePanel = signal<'chat' | 'participants' | null>(null);
 
   newMessageText = signal('');
-  localStream: MediaStream | null = null;
-  cameraStream: MediaStream | null = null; 
-
-  presenceChannel: RealtimeChannel | null = null;
-  participants = signal<any[]>([]);
   
-  isProcessingHangup = signal(false);
+  participants = signal<any[]>([]);
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('moduleId');
@@ -58,9 +63,8 @@ export class VideoCallTeacherComponent implements OnInit, OnDestroy {
 
     try {
       const isOwner = await this.courseService.verifyModuleOwnership(this.moduleId);
-      console.log(`valor de ${isOwner}`);
       if (!isOwner) {
-        this.exit('Acceso denegado. No eres el propietario.');
+        this.exit('Acceso denegado. No eres el propietario de esta clase.');
         return;
       }
 
@@ -71,25 +75,149 @@ export class VideoCallTeacherComponent implements OnInit, OnDestroy {
       this.courseName.set(details.title);
 
       if (details.status === 'finalizado') {
-        this.exit('Esta clase ya finalizó.', true);
+        this.exit('Esta clase ya ha finalizado.', true);
         return;
       }
 
       this.chatService.loadMessages(this.moduleId);
       this.chatService.subscribeToChat(this.moduleId);
-      await this.startCamera();
-      this.initPresence();
+
+      await this.connectToLiveKit();
 
     } catch (error) {
       console.error(error);
-      this.exit('Error inesperado.');
+      this.exit('Error inesperado al iniciar la clase.');
     }
   }
 
-  ngOnDestroy() {
-    this.chatService.unsubscribe();
-    if (this.presenceChannel) this.supabase.client.removeChannel(this.presenceChannel);
-    this.stopAllTracks();
+  async connectToLiveKit() {
+    try {
+      const profile = await this.profileService.getOwnProfile();
+      const myName = profile?.full_name || 'Profesor';
+
+      const token = await this.courseService.getLiveKitToken(`class-${this.moduleId}`, myName);
+
+      this.room = new Room({
+        adaptiveStream: true,
+        dynacast: true,
+        videoCaptureDefaults: {
+          resolution: { width: 1280, height: 720 }, // HD
+        }
+      });
+
+      this.room
+        .on(RoomEvent.Connected, () => {
+            console.log('Conectado a LiveKit.');
+            this.updateParticipants();
+        })
+        .on(RoomEvent.Disconnected, () => console.log('Desconectado.'))
+        .on(RoomEvent.ParticipantConnected, () => this.updateParticipants())
+        .on(RoomEvent.ParticipantDisconnected, () => this.updateParticipants());
+
+      const liveKitUrl = 'wss://meet4learn-d3h5oi4q.livekit.cloud'; 
+      await this.room.connect(liveKitUrl, token);
+
+      await this.room.localParticipant.enableCameraAndMicrophone();
+      
+      this.attachLocalVideo();
+      this.updateParticipants();
+
+    } catch (error) {
+      console.error('Error LiveKit:', error);
+      alert('No se pudo conectar al servidor de video.');
+    }
+  }
+
+  attachLocalVideo() {
+    if (!this.room?.localParticipant) return;
+
+    const publications = Array.from(this.room.localParticipant.videoTrackPublications.values());
+    
+    const videoPub = publications[0];
+
+    const videoTrack = videoPub?.track; 
+
+    if (videoTrack instanceof LocalVideoTrack && this.localVideo?.nativeElement) {
+      videoTrack.attach(this.localVideo.nativeElement);
+      this.localVideo.nativeElement.muted = true; 
+    }
+  }
+
+  updateParticipants() {
+    if (!this.room) return;
+    
+    // Remotos
+    const remotes = Array.from(this.room.remoteParticipants.values()).map(p => ({
+        identity: p.identity,
+        sid: p.sid,
+        isLocal: false
+    }));
+
+    const local = {
+        identity: this.room.localParticipant.identity + ' (Tú)',
+        sid: this.room.localParticipant.sid,
+        isLocal: true
+    };
+
+    this.participants.set([local, ...remotes]);
+  }
+
+  async toggleMic() {
+    if (this.room?.localParticipant) {
+      const current = this.isMicOn();
+      await this.room.localParticipant.setMicrophoneEnabled(!current);
+      this.isMicOn.set(!current);
+    }
+  }
+
+  async toggleCam() {
+    if (this.room?.localParticipant) {
+      const current = this.isCamOn();
+      await this.room.localParticipant.setCameraEnabled(!current);
+      this.isCamOn.set(!current);
+      if (!current) setTimeout(() => this.attachLocalVideo(), 200);
+    }
+  }
+
+  async toggleScreenShare() {
+    if (this.room?.localParticipant) {
+      try {
+        const current = this.isScreenSharing();
+        await this.room.localParticipant.setScreenShareEnabled(!current);
+        this.isScreenSharing.set(!current);
+        
+        setTimeout(() => this.attachLocalVideo(), 500);
+      } catch(e) {
+        console.error('Error al compartir pantalla', e);
+        this.isScreenSharing.set(false);
+      }
+    }
+  }
+
+  togglePanel(panel: 'chat' | 'participants') {
+    this.activePanel.update(c => c === panel ? null : panel);
+  }
+
+  async hangUp() {
+    if (confirm('¿Finalizar la clase para todos? Esto cerrará la sesión.')) {
+      try {
+        await this.room?.disconnect();
+        
+        await this.courseService.markModuleAsFinished(this.moduleId);
+        
+        this.router.navigate(['/panel-teacher/course', this.courseIdToReturn]);
+      } catch (e) {
+        console.error('Error al finalizar:', e);
+        this.router.navigate(['/panel-teacher/courses']);
+      }
+    }
+  }
+
+  sendMessage() {
+    const text = this.newMessageText().trim();
+    if (!text) return;
+    this.chatService.sendMessage(this.moduleId, text);
+    this.newMessageText.set(''); 
   }
 
   private exit(msg: string, toCourse = false) {
@@ -98,111 +226,8 @@ export class VideoCallTeacherComponent implements OnInit, OnDestroy {
     else this.router.navigate(['/panel-teacher/courses']);
   }
 
-  async initPresence() {
-    try {
-      const myProfile = await this.profileService.getOwnProfile();
-      const displayName = myProfile?.full_name || 'Docente';
-      const myId = myProfile?.id;
-
-      this.presenceChannel = this.supabase.client.channel(`room-${this.moduleId}`)
-        .on('presence', { event: 'sync' }, () => {
-          const state = this.presenceChannel?.presenceState();
-          const users: any[] = [];
-          for (const key in state) users.push(...state[key]);
-          this.participants.set(users);
-        })
-        .subscribe(async (status) => {
-          if (status === 'SUBSCRIBED') {
-            await this.presenceChannel?.track({
-              online_at: new Date().toISOString(),
-              user_id: myId, 
-              name: `${displayName} (Tú)`, 
-              role: 'teacher'
-            });
-          }
-        });
-    } catch (e) { console.error(e); }
-  }
-
-  async startCamera() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      this.localStream = stream;
-      this.cameraStream = stream;
-      this.attachStream(stream);
-      this.isCamOn.set(true);
-      this.isScreenSharing.set(false);
-    } catch (err) {
-      console.error(err);
-      alert('No se pudo acceder a cámara/micrófono.');
-    }
-  }
-
-  async toggleScreenShare() {
-    if (this.isScreenSharing()) {
-      await this.startCamera();
-      return;
-    }
-    try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-      stream.getVideoTracks()[0].onended = () => this.startCamera();
-      this.localStream = stream;
-      this.attachStream(stream);
-      this.isScreenSharing.set(true);
-      this.isCamOn.set(true);
-    } catch (err) { console.error('Cancelado compartir'); }
-  }
-
-  attachStream(stream: MediaStream) {
-    if (this.localVideo?.nativeElement) {
-      this.localVideo.nativeElement.srcObject = stream;
-      this.localVideo.nativeElement.muted = true;
-    }
-  }
-
-  stopAllTracks() {
-    this.localStream?.getTracks().forEach(t => t.stop());
-    this.cameraStream?.getTracks().forEach(t => t.stop());
-  }
-
-  toggleMic() {
-    if (this.localStream) {
-      const track = this.localStream.getAudioTracks()[0];
-      if (track) {
-        track.enabled = !track.enabled;
-        this.isMicOn.set(track.enabled);
-      }
-    }
-  }
-
-  toggleCam() {
-    if (this.localStream) {
-      const track = this.localStream.getVideoTracks()[0];
-      if (track) {
-        track.enabled = !track.enabled;
-        this.isCamOn.set(track.enabled);
-      }
-    }
-  }
-
-  togglePanel(panel: 'chat' | 'participants') {
-    this.activePanel.update( current => current === panel ? null : panel );
-  }
-
-  sendMessage() {
-    const text = this.newMessageText().trim();
-    if (!text) return;
-    this.chatService.sendMessage(this.moduleId, text);
-    this.newMessageText.set('');
-  }
-
-  async hangUp() {
-    if (this.isProcessingHangup()) return;
-    if (confirm('¿Finalizar la clase y cerrar la sala?')) {
-      this.isProcessingHangup.set(true);
-      this.stopAllTracks();
-      await this.courseService.markModuleAsFinished(this.moduleId);
-      this.router.navigate(['/panel-teacher/course', this.courseIdToReturn]);
-    }
+  ngOnDestroy() {
+    this.chatService.unsubscribe();
+    this.room?.disconnect();
   }
 }

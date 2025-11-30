@@ -34,12 +34,14 @@ private courseId = signal(0);
   });
 
   ngOnInit() {
-    const idFromUrl = this.route.snapshot.paramMap.get('id');
-    if (idFromUrl) {
-      const id = +idFromUrl;
-      this.courseId.set(id);
-      this.loadData();
-    }
+    this.route.paramMap.subscribe(params => {
+      const idFromUrl = params.get('id');
+      if (idFromUrl) {
+        const id = +idFromUrl;
+        this.courseId.set(id);
+        this.loadData();
+      }
+    });
   }
 
   async loadData() {

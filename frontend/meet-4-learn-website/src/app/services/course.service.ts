@@ -107,7 +107,7 @@ export class CourseService {
     return data as Module;
   }
 
-  async getCoursesWithModules() {
+async getCoursesWithModules() {
     const userId = this.authService.getCurrentUserId();
     if (!userId) throw new Error('Usuario no autenticado');
 
@@ -115,9 +115,9 @@ export class CourseService {
       .from('course')
       .select(`
         *,
-        modules (*)
+        modules:modules!modules_courseId_fkey(*)
       `)
-      .eq('teacher_id', userId) 
+      .eq('teacher_id', userId)
       .order('start_date', { ascending: false });
     
     if (error) throw error;
@@ -190,5 +190,17 @@ export class CourseService {
         console.error('Error al finalizar el módulo en BD:', error);
         throw error;
     }
+  }
+
+  async getLiveKitToken(roomName: string, participantName: string) {
+    const { data, error } = await this.supabaseService.client.functions.invoke('get-livekit-token', {
+      body: { roomName, participantName }
+    });
+    
+    if (error) {
+      console.error('Error obteniendo token:', error);
+      throw error;
+    }
+    return data.token;
   }
 }
