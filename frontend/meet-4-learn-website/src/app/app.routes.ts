@@ -12,6 +12,7 @@ import { CoursesTeacherComponent } from './pages/courses-teacher/courses-teacher
 import { SelectedCourseTeacherComponent } from  './pages/selected-course-teacher/selected-course-teacher.component';
 import { SubscriptionsTeacherComponent } from './pages/subscriptions-teacher/subscriptions-teacher.component';
 import { CalendarTeacherComponent } from './pages/calendar-teacher/calendar-teacher.component';
+import { VideoCallTeacherComponent } from './pages/video-call-teacher/video-call-teacher.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/hub', pathMatch: 'full' },
@@ -29,7 +30,8 @@ export const routes: Routes = [
             { path: 'courses', component: CoursesTeacherComponent},
             { path: 'course/:id', component: SelectedCourseTeacherComponent},
             { path: 'subscriptions', component: SubscriptionsTeacherComponent},
-            { path: 'calendar', component: CalendarTeacherComponent}
+            { path: 'calendar', component: CalendarTeacherComponent},
+            { path: 'video-call/:moduleId', component: VideoCallTeacherComponent }
         ]
     },
     { path: '**', redirectTo: 'hub' }

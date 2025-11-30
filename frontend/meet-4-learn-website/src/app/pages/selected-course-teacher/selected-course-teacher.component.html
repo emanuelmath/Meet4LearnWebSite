@@ -1,6 +1,5 @@
-<!-- HEADER DE NAVEGACIÓN -->
 <div class="nav-header">
-    <a [routerLink]="['/panel/courses']" class="btn-back">
+    <a [routerLink]="['/panel-teacher/courses']" class="btn-back">
         <i class="fas fa-arrow-left"></i> VOLVER A MIS CURSOS
     </a>
 </div>
@@ -8,10 +7,7 @@
 @if (course()) {
     <div class="course-detail-container">
         
-        <!-- PANEL DE DETALLES DEL CURSO -->
         <div class="course-detail-panel">
-            
-            <!-- Encabezado del Panel (Nombre y Alumnos) -->
             <div class="course-header-grid">
                 <div class="header-name-box">
                     {{ course()?.name }}
@@ -23,33 +19,26 @@
                 </div>
             </div>
 
-            <!-- Descripción y Detalles Extra -->
             <div class="course-description-box">
                 <div class="description-content">
                     <h3 class="description-title">DESCRIPCIÓN DEL CURSO</h3>
-                    <p class="description-text">
-                        {{ course()?.description }}
-                    </p>
+                    <p class="description-text">{{ course()?.description }}</p>
                 </div>
                 
                 <div class="details-sidebar">
                     <div class="detail-item">
-                        <i class="fas fa-tag"></i>
-                        <span>PRECIO: ${{ course()?.price }}</span>
+                        <i class="fas fa-tag"></i> <span>PRECIO: ${{ course()?.price }}</span>
                     </div>
                     <div class="detail-item">
-                        <i class="far fa-calendar-alt"></i>
-                        <span>INICIO: {{ course()?.start_date | date:'dd/MM/yyyy' }}</span>
+                        <i class="far fa-calendar-alt"></i> <span>INICIO: {{ course()?.start_date | date:'dd/MM/yyyy' }}</span>
                     </div>
                     <div class="detail-item">
-                        <i class="far fa-calendar-check"></i>
-                        <span>FIN: {{ course()?.finish_date | date:'dd/MM/yyyy' }}</span>
+                        <i class="far fa-calendar-check"></i> <span>FIN: {{ course()?.finish_date | date:'dd/MM/yyyy' }}</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- PANEL DE MÓDULOS -->
         <div class="modules-panel">
             <div class="modules-header">
                 <h2 class="modules-title">MÓDULOS DEL CURSO</h2>
@@ -58,13 +47,18 @@
 
             <div class="modules-grid">
                 @for (mod of modules(); track mod.id; let i = $index) {
-                    <!-- Tarjeta de Módulo -->
                     <div class="module-card" [class.card-yellow]="i % 2 === 0" [class.card-blue]="i % 2 !== 0">
                         <div class="module-number">{{ i + 1 }}</div>
                         <div class="module-info">
                             <h4>{{ mod.title }}</h4>
                             <p>{{ mod.description }}</p>
-                            <small><i class="far fa-clock"></i> {{ mod.scheduled_at | date:'medium' }}</small>
+                            <small>
+                                <i class="far fa-clock"></i> {{ mod.scheduled_at | date:'medium' }}
+                                
+                                @if ($any(mod).status === 'finalizado') {
+                                    <span style="color: #d32f2f; font-weight: bold; margin-left: 10px;">(FINALIZADO)</span>
+                                }
+                            </small>
                         </div>
                         <button class="btn-module-options">
                             <i class="fas fa-ellipsis-v"></i>
@@ -80,22 +74,19 @@
 
     </div>
 
-    <!-- BOTONES FLOTANTES DE ACCIÓN -->
     <div class="floating-actions">
         <button class="btn-action btn-create-module" (click)="toggleModal()">
             <i class="fas fa-plus"></i> CREAR MÓDULO
         </button>
-        <button class="btn-action btn-start-meeting">
-            <i class="fas fa-video"></i> INICIAR REUNIÓN
+        <button class="btn-action btn-start-meeting" (click)="toggleLiveModal()">
+            <i class="fas fa-video"></i> INICIAR CLASE EN VIVO
         </button>
     </div>
+
 } @else {
     <p style="text-align: center; padding: 50px;">Cargando información del curso...</p>
 }
 
-<!-- ========================================== -->
-<!-- MODAL: CREAR MÓDULO                        -->
-<!-- ========================================== -->
 @if (isModalOpen()) {
     <div class="modal-overlay">
         <div class="modal-container">
@@ -106,7 +97,6 @@
             
             <div class="modal-body">
                 <form (ngSubmit)="handleCreateModule()">
-                    
                     <label class="form-label">TÍTULO DEL MÓDULO</label>
                     <input type="text" class="input-field" [(ngModel)]="newModule().title" name="title" placeholder="Ej: Introducción a Variables" required>
 
@@ -125,5 +115,59 @@
                 </form>
             </div>
         </div>
+    </div>
+}
+
+@if (isLiveModalOpen()) {
+    <div class="modal-overlay">
+      <div class="modal-container live-selection-modal">
+        
+        <div class="modal-header">
+          <span>SELECCIONAR MÓDULO PARA TRANSMITIR</span>
+          <button class="btn-close" (click)="toggleLiveModal()"><i class="fas fa-times"></i></button>
+        </div>
+  
+        <div class="modal-body live-body">
+          <p class="modal-subtitle">Selecciona la clase programada para iniciar transmisión:</p>
+  
+          <div class="modules-list-scroll">
+            @for (mod of modules(); track mod.id) {
+              
+              @let status = canJoinClass(mod);
+  
+              <div class="live-module-item">
+                <div class="mod-info-col">
+                  <span class="mod-date-badge">
+                    {{ mod.scheduled_at | date:'dd MMM, h:mm a' }}
+                  </span>
+                  <span class="mod-title-text">{{ mod.title }}</span>
+                </div>
+  
+                <div class="mod-action-col">
+                  @if (status.canJoin) {
+                    <button class="btn-join-live pulse-animation" (click)="navigateToCall(mod.id)">
+                      ENTRAR <i class="fas fa-sign-in-alt"></i>
+                    </button>
+                  } @else {
+                    <button class="btn-disabled-live" disabled>
+                      {{ status.message }}
+                    </button>
+                  }
+                </div>
+              </div>
+  
+            } @empty {
+              <div class="empty-state-modal">
+                No hay clases programadas. Crea un módulo primero.
+              </div>
+            }
+          </div>
+  
+          <div class="modal-footer">
+            <button class="btn-cancel" (click)="toggleLiveModal()">CERRAR</button>
+          </div>
+  
+        </div>
+      </div>
     </div>
 }

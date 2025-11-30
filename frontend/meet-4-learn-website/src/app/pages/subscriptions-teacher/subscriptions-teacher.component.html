@@ -43,9 +43,12 @@
         <div class="card-type-badge">{{ i === 0 ? 'PREDETERMINADO' : 'COMPRA DIRECTA' }}</div>
 
         <ul class="features-list">
-          <li><div class="bullet-circle"></div><p>Máximo <strong>{{ plan.max_active }} cursos</strong>.</p></li>
-          <li><div class="bullet-circle"></div><p>Cupo <strong>{{ plan.max_students }} estudiantes</strong>.</p></li>
-          <li><div class="bullet-circle"></div><p>Comisión <strong>{{ (plan.commission_rate * 100).toFixed(0) }}%</strong>.</p></li>
+          <li><div class="bullet-circle"></div><p> El docente podrá dar un máximo de 
+                  <strong>{{ plan.max_active }} cursos.</strong></p></li>
+          <li><div class="bullet-circle"></div><p>Tendrá un máximo de 
+                  <strong>{{ plan.max_students }} estudiantes</strong> de cupo.</p></li>
+          <li><div class="bullet-circle"></div><p>Puede elegir si el curso es gratis o de paga. Si es de paga, se <strong>cobrará</strong> una comisión del 
+                  <strong>{{ (plan.commission_rate * 100).toFixed(0) }}%</strong> por cada alumno inscrito.</p></li>
         </ul>
 
         <div class="card-footer">

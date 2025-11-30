@@ -57,7 +57,7 @@ export class CourseService {
     if (!userId) throw new Error('Usuario no autenticado');
 
     const { data, error } = await this.supabaseService.client
-      .rpc('rpc_create_course', { // Llamado a la función
+      .rpc('rpc_create_course', { // Llamado a la función.
         p_teacher_id: userId,
         p_name: courseData.name,
         p_description: courseData.description,
@@ -105,5 +105,65 @@ export class CourseService {
     
     if (error) throw error;
     return data as Module;
+  }
+
+  async getCoursesWithModules() {
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) throw new Error('Usuario no autenticado');
+
+    const { data, error } = await this.supabaseService.client
+      .from('course')
+      .select(`
+        *,
+        modules (*)
+      `)
+      .eq('teacher_id', userId) 
+      .order('start_date', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  }
+
+  async verifyModuleOwnership(moduleId: number): Promise<boolean> {
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) return false;
+
+    const { data, error } = await this.supabaseService.client
+      .from('modules')
+      .select(`id, course: courseId ( teacher_id )`)
+      .eq('id', moduleId)
+      .single();
+
+    if (error || !data || !data.course) return false;
+    
+    // Doble verificación en JS
+    const course: any = data.course;
+    return course.teacher_id === userId;
+  }
+
+  async getModuleDetails(moduleId: number) {
+    const { data, error } = await this.supabaseService.client
+      .from('modules')
+      .select('*')
+      .eq('id', moduleId)
+      .single();
+
+    if (error) {
+      console.error('Error fetching module details:', error);
+      return null;
+    }
+    return data;
+  }
+
+  async markModuleAsFinished(moduleId: number): Promise<void> {
+    const { error } = await this.supabaseService.client
+      .from('modules')
+      .update({ status: "'finalizado'" }) 
+      .eq('id', moduleId);
+
+    if (error) {
+        console.error('Error al finalizar el módulo en BD:', error);
+        throw error;
+    }
   }
 }

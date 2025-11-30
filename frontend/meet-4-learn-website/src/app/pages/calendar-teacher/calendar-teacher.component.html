@@ -1,1 +1,83 @@
-<p>calendar-teacher works!</p>
+<div class="calendar-container">
+
+  <div class="calendar-header">
+    
+    <div class="header-left">
+      <h2>CALENDARIO DOCENTE</h2>
+      
+      <div class="nav-controls">
+        <button class="btn-icon" (click)="changeWeek(-1)">❮</button>
+        <button class="btn-text" (click)="resetToToday()">HOY</button>
+        <button class="btn-icon" (click)="changeWeek(1)">❯</button>
+      </div>
+
+      <span class="current-range">
+        {{ weekDays()[0] | date:'MMM d' }} - {{ weekDays()[6] | date:'MMM d, y' }}
+      </span>
+    </div>
+
+    <div class="header-right">
+      
+      <div class="search-group">
+        <input type="text" 
+               placeholder="Buscar curso o módulo..." 
+               [ngModel]="searchTerm()"
+               (ngModelChange)="searchTerm.set($event)"
+               (keyup.enter)="searchAndJump()">
+        
+        <button class="btn-search" (click)="searchAndJump()">
+          <i class="fas fa-search"></i> <h5>Filtrar</h5> </button>
+      </div>
+
+      <select class="custom-select" 
+              [ngModel]="filterStatus()" 
+              (ngModelChange)="filterStatus.set($event)">
+        <option value="active">Cursos Activos</option>
+        <option value="finished">Finalizados</option>
+        <option value="all">Ver Todo</option>
+      </select>
+
+    </div>
+  </div>
+
+  <div class="week-grid">
+    @for (day of weekDays(); track day) {
+      <div class="day-column" [class.today-column]="isToday(day)">
+        
+        <div class="day-header">
+          <span class="day-name">{{ day | date:'EEE' | uppercase }}</span>
+          <span class="day-number" [class.today-number]="isToday(day)">
+            {{ day | date:'d' }}
+          </span>
+        </div>
+
+        <div class="day-body">
+          @for (event of getEventsForDay(day); track event.id) {
+            
+            <div class="event-card" 
+                 [ngClass]="{
+                   'event-start': event.type === 'start',
+                   'event-end': event.type === 'end',
+                   'event-module': event.type === 'module',
+                   'disabled-visual': shouldLookDisabled(event),
+                   'highlight-pulse': isHighlighted(event.id)
+                 }">
+              
+              @if (event.type === 'module') {
+                <div class="event-time">
+                  {{ event.date | date:'shortTime' }}
+                </div>
+              }
+
+              <div class="event-title">{{ event.title }}</div>
+              <div class="event-course">{{ event.courseName }}</div>
+            </div>
+
+          }
+        </div>
+
+      </div>
+    }
+  </div>
+
+</div>

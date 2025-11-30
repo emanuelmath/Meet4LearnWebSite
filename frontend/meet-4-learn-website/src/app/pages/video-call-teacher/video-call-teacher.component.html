@@ -1,1 +1,113 @@
-<p>video-call-teacher works!</p>
+<div class="call-interface">
+
+  <div class="stage-area" [class.shrink-for-panel]="activePanel() !== null">
+    
+    <div class="stage-header">
+      <div class="live-indicator"><span class="dot"></span> EN VIVO</div>
+      <h2 class="class-title">{{ courseName() }}</h2>
+    </div>
+
+    <div class="video-wrapper">
+      <video #localVideo autoplay playsinline 
+             [class.hidden]="!isCamOn()" 
+             [class.mirror]="!isScreenSharing()"> 
+      </video>
+
+      <div class="no-video-placeholder" *ngIf="!isCamOn()">
+        <div class="avatar-ph"><i class="fas fa-video-slash"></i></div>
+        <p>Cámara Pausada</p>
+      </div>
+    </div>
+
+    <div class="controls-dock">
+      <button class="dock-btn" (click)="toggleMic()" [class.off]="!isMicOn()" title="Micrófono">
+        <i class="fas" [ngClass]="isMicOn() ? 'fa-microphone' : 'fa-microphone-slash'"></i>
+      </button>
+
+      <button class="dock-btn" (click)="toggleCam()" [class.off]="!isCamOn()" title="Cámara">
+        <i class="fas" [ngClass]="isCamOn() ? 'fa-video' : 'fa-video-slash'"></i>
+      </button>
+
+      <button class="dock-btn" (click)="toggleScreenShare()" [class.sharing]="isScreenSharing()" title="Compartir">
+        <i class="fas fa-desktop"></i>
+      </button>
+
+      <button class="dock-btn" (click)="togglePanel('participants')" [class.active-panel]="activePanel() === 'participants'" title="Alumnos">
+        <i class="fas fa-users"></i>
+        <span class="badge-count">{{ participants().length }}</span>
+      </button>
+
+      <button class="dock-btn" (click)="togglePanel('chat')" [class.active-panel]="activePanel() === 'chat'" title="Chat">
+        <i class="fas fa-comment-alt"></i>
+      </button>
+
+      <button class="dock-btn hangup-btn" (click)="hangUp()" [disabled]="isProcessingHangup()" title="Finalizar">
+        <i class="fas fa-phone-slash"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="side-panel" [class.panel-open]="activePanel() !== null">
+    
+    <div class="panel-content" *ngIf="activePanel() === 'chat'">
+        <div class="panel-header">
+            <h3>Chat de la clase</h3>
+            <button class="close-panel-btn" (click)="activePanel.set(null)">×</button>
+        </div>
+
+        <div class="chat-messages">
+            @for (msg of messages(); track msg.id) {
+                @if (msg.isMine) {
+                    <div class="msg-row me">
+                        <div class="msg-bubble blue">{{ msg.messageText }}</div>
+                        <span class="msg-time">{{ msg.time | date:'shortTime' }}</span>
+                    </div>
+                } @else {
+                    <div class="msg-row other">
+                        <div class="avatar-xs">
+                            <img [src]="'https://placehold.co/50x50/70b3ff/233044?text=' + (msg.senderName?.charAt(0) || '?')" alt="">
+                        </div>
+                        <div class="msg-col">
+                            <span class="sender-label">{{ msg.senderName }}</span>
+                            <div class="msg-bubble gray">{{ msg.messageText }}</div>
+                            <span class="msg-time">{{ msg.time | date:'shortTime' }}</span>
+                        </div>
+                    </div>
+                }
+            } @empty {
+                <div class="empty-state-panel"><p>Aún no hay mensajes.</p></div>
+            }
+        </div>
+
+        <div class="chat-composer">
+            <input type="text" placeholder="Escribe un mensaje..." 
+                   [ngModel]="newMessageText()"
+                   (ngModelChange)="newMessageText.set($event)"
+                   (keyup.enter)="sendMessage()">
+            <button class="btn-send-chat" (click)="sendMessage()" [disabled]="!newMessageText().trim()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="panel-content" *ngIf="activePanel() === 'participants'">
+        <div class="panel-header">
+            <h3>Participantes ({{ participants().length }})</h3>
+            <button class="close-panel-btn" (click)="activePanel.set(null)">×</button>
+        </div>
+        <div class="participants-list">
+            @for (user of participants(); track $index) {
+                <div class="participant-item">
+                    <div class="p-avatar">{{ user.name?.charAt(0) || '?' }}</div>
+                    <div class="p-info">
+                        <span class="p-name">{{ user.name }}</span>
+                        <span class="p-role">{{ user.role === 'teacher' ? 'Docente' : 'Alumno' }}</span>
+                    </div>
+                    <div class="p-status"><i class="fas fa-circle online"></i></div>
+                </div>
+            }
+        </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,244 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&display=swap');
+
+:host {
+  display: block;
+  font-family: 'Oswald', sans-serif;
+  --color-border: #e0e0e0;
+  --bg-today: #f4faff;
+  
+  /* Colores */
+  --color-start-bg: #dcfce7;
+  --color-start-text: #166534;
+  --color-start-border: #22c55e;
+
+  --color-end-bg: #fee2e2;
+  --color-end-text: #991b1b;
+  --color-end-border: #ef4444;
+
+  --color-mod-bg: #dbeafe;
+  --color-mod-text: #1e40af;
+  --color-mod-border: #3b82f6;
+  
+  --color-primary: #2563eb; /* Azul principal */
+}
+
+.calendar-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  padding: 25px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* --- HEADER --- */
+.calendar-header {
+  display: flex;
+  justify-content: space-between; /* Separa Izquierda y Derecha */
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+  gap: 20px;
+  flex-wrap: nowrap; 
+  overflow-x: auto;
+}
+
+/* SECCIÓN IZQUIERDA (Título y Navegación) */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.header-left h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.nav-controls {
+  display: flex;
+  gap: 5px;
+  background: #f5f5f5;
+  padding: 4px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.btn-icon, .btn-text {
+  border: none;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 500;
+  color: #555;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.btn-icon:hover, .btn-text:hover { background: #333; color: white; }
+
+.current-range {
+  font-size: 1.2rem;
+  color: #666;
+  margin-left: 10px;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+/* SECCIÓN DERECHA (Filtros y Búsqueda) */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Espacio entre el buscador y el select */
+  flex-shrink: 1;
+}
+
+/* NUEVO: GRUPO DE BÚSQUEDA (Input + Botón unidos) */
+.search-group {
+  display: flex;
+  align-items: stretch;
+}
+
+.search-group input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-right: none; /* Quitamos borde derecho para unir con el botón */
+  border-radius: 6px 0 0 6px; /* Redondear solo izquierda */
+  font-family: 'Oswald', sans-serif;
+  outline: none;
+  width: 200px;
+  transition: width 0.3s;
+}
+.search-group input:focus {
+  border-color: var(--color-primary);
+  width: 240px; /* Se expande un poco al enfocar */
+}
+
+/* Botón de la lupa */
+.btn-search {
+  background-color: var(--color-primary);
+  color: white;
+  border: 1px solid var(--color-primary);
+  border-radius: 0 6px 6px 0; /* Redondear solo derecha */
+  padding: 0 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-search:hover {
+  background-color: #1d4ed8; /* Azul más oscuro */
+}
+
+/* Select */
+.custom-select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: 'Oswald', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  background-color: white;
+}
+.custom-select:hover { border-color: #888; }
+
+
+/* --- GRID DEL CALENDARIO (Sin cambios mayores) --- */
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.day-column {
+  border-right: 1px solid var(--color-border);
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+.day-column:last-child { border-right: none; }
+.day-column.today-column { background-color: var(--bg-today); }
+
+.day-header {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.day-name { display: block; font-size: 0.9rem; color: #888; font-weight: 400; margin-bottom: 5px; }
+
+.day-number {
+  display: inline-block;
+  font-size: 2rem;
+  font-weight: 400;
+  color: #333;
+  width: 45px;
+  height: 45px;
+  line-height: 45px;
+  border-radius: 50%;
+}
+.day-number.today-number {
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+}
+
+.day-body {
+  padding: 10px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Event Cards */
+.event-card {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-left: 4px solid #ccc;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+  position: relative;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.event-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+.event-start { background-color: var(--color-start-bg); color: var(--color-start-text); border-left-color: var(--color-start-border); }
+.event-end { background-color: var(--color-end-bg); color: var(--color-end-text); border-left-color: var(--color-end-border); }
+.event-module { background-color: var(--color-mod-bg); color: var(--color-mod-text); border-left-color: var(--color-mod-border); }
+
+.disabled-visual { opacity: 0.6; filter: grayscale(100%); border-left-style: dotted !important; }
+.disabled-visual:hover { opacity: 0.9; filter: grayscale(0%); }
+
+.event-time { font-size: 0.75rem; font-weight: 700; opacity: 0.8; margin-bottom: 2px; }
+.event-title { font-weight: 500; line-height: 1.2; }
+.event-course { margin-top: 4px; font-size: 0.75rem; opacity: 0.8; text-transform: uppercase; }
+
+/* Animación de Resaltado */
+@keyframes pulse-yellow {
+  0% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7); transform: scale(1); }
+  70% { box-shadow: 0 0 0 10px rgba(250, 204, 21, 0); transform: scale(1.05); }
+  100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); transform: scale(1); }
+}
+.highlight-pulse {
+  animation: pulse-yellow 1.5s infinite;
+  border: 2px solid #eab308 !important;
+  z-index: 10;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .calendar-header { flex-wrap: wrap; }
+  .week-grid { grid-template-columns: 1fr; border: none; }
+  .day-column { min-height: auto; border: 1px solid var(--color-border); border-radius: 8px; margin-bottom: 15px; }
+}
