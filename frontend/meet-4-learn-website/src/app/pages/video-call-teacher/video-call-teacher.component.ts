@@ -95,7 +95,7 @@ export class VideoCallTeacherComponent implements OnInit, OnDestroy {
       const profile = await this.profileService.getOwnProfile();
       const myName = profile?.full_name || 'Profesor';
 
-      const token = await this.courseService.getLiveKitToken(`class-${this.moduleId}`, myName);
+      const token = await this.courseService.getLiveKitToken(this.moduleId.toString(), myName);
 
       this.room = new Room({
         adaptiveStream: true,
@@ -128,20 +128,18 @@ export class VideoCallTeacherComponent implements OnInit, OnDestroy {
     }
   }
 
-  attachLocalVideo() {
+ attachLocalVideo() {
     if (!this.room?.localParticipant) return;
 
-    const publications = Array.from(this.room.localParticipant.videoTrackPublications.values());
-    
-    const videoPub = publications[0];
+    // Buscar explícitamente un track de video, no el primero que aparezca
+    const videoPub = Array.from(this.room.localParticipant.videoTrackPublications.values())
+        .find(pub => pub.track instanceof LocalVideoTrack);
 
-    const videoTrack = videoPub?.track; 
-
-    if (videoTrack instanceof LocalVideoTrack && this.localVideo?.nativeElement) {
-      videoTrack.attach(this.localVideo.nativeElement);
-      this.localVideo.nativeElement.muted = true; 
+    if (videoPub?.track && this.localVideo?.nativeElement) {
+        videoPub.track.attach(this.localVideo.nativeElement);
+        this.localVideo.nativeElement.muted = true;
     }
-  }
+}
 
   updateParticipants() {
     if (!this.room) return;
