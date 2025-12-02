@@ -1,0 +1,127 @@
+<div class="page-header-centered">
+    <h2 class="page-title">MODERACIÓN DE CURSOS</h2>
+    <div class="header-subtitle">{{ filteredCourses().length }} CURSOS ENCONTRADOS</div>
+</div>
+
+@if (errorMessage()) {
+    <div class="alert-box error"><strong>Error:</strong> {{ errorMessage() }}</div>
+}
+@if (successMessage()) {
+    <div class="alert-box success"><strong>Éxito:</strong> {{ successMessage() }}</div>
+}
+
+<div class="management-container">
+    
+    <div class="toolbar">
+        
+        <div class="filter-group" style="flex: 2;">
+            <label class="filter-label">FILTRAR POR DOCENTE</label>
+            <div class="custom-select-wrapper">
+                <select [ngModel]="selectedTeacher()" (ngModelChange)="selectedTeacher.set($event)" class="filter-select">
+                    <option value="">TODOS LOS DOCENTES</option>
+                    @for (teacher of teachers(); track teacher.id) {
+                        <option [value]="teacher.id">{{ teacher.full_name }}</option>
+                    }
+                </select>
+                <i class="fas fa-chalkboard-teacher select-icon"></i>
+            </div>
+        </div>
+
+        <div class="filter-group" style="flex: 1;">
+            <label class="filter-label">FILTRAR POR ESTADO</label>
+            <div class="custom-select-wrapper">
+                <select [ngModel]="selectedStatus()" (ngModelChange)="selectedStatus.set($event)" class="filter-select">
+                    <option value="">TODOS LOS ESTADOS</option>
+                    <option value="activo">ACTIVO</option>
+                    <option value="en_revision">EN REVISIÓN</option>
+                    <option value="baneado">BANEADO</option>
+                    <option value="finalizado">FINALIZADO</option>
+                </select>
+                <i class="fas fa-filter select-icon"></i>
+            </div>
+        </div>
+
+        <div class="filter-group-btn">
+            <label class="filter-label">&nbsp;</label>
+            <button (click)="loadData()" class="btn-refresh" title="Recargar Lista">
+                <i class="fas fa-sync-alt" [class.fa-spin]="isLoading()"></i> REFRESCAR
+            </button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>CURSO</th>
+                    <th>DOCENTE</th>
+                    <th>PRECIO</th>
+                    <th>ESTADO</th>
+                    <th class="text-right">ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (isLoading()) {
+                    <tr>
+                        <td colspan="6" class="loading-cell">
+                            <i class="fas fa-circle-notch fa-spin"></i> Cargando datos...
+                        </td>
+                    </tr>
+                } @else {
+                    @for (course of filteredCourses(); track course.id) {
+                        <tr>
+                            <td><span class="id-badge">#{{ course.id }}</span></td>
+
+                            <td>
+                                <span class="course-name">{{ course.name }}</span>
+                            </td>
+
+                            <td>
+                                <div class="teacher-info">
+                                    <i class="fas fa-user-tie"></i>
+                                    {{ course.profile?.full_name || 'Desconocido' }}
+                                </div>
+                            </td>
+ 
+                            <td class="font-bold text-green">${{ course.price }}</td>
+
+                            <td>
+                                <span class="status-badge" 
+                                      [class.status-active]="course.status === 'activo'"
+                                      [class.status-review]="course.status === 'en_revision'"
+                                      [class.status-banned]="course.status === 'baneado'"
+                                      [class.status-ended]="course.status === 'finalizado'">
+                                    {{ course.status.replace('_', ' ') | uppercase }}
+                                </span>
+                            </td>
+                            
+                            <td class="text-right">
+                                <div class="actions-group">
+                                    <button (click)="handleChangeStatus(course.id, 'activo')" class="btn-icon btn-approve" title="Aprobar / Activar">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button (click)="handleChangeStatus(course.id, 'en_revision')" class="btn-icon btn-review" title="Poner en Revisión">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button (click)="handleChangeStatus(course.id, 'baneado')" class="btn-icon btn-ban" title="Banear Curso">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                    <button (click)="handleChangeStatus(course.id, 'finalizado')" class="btn-icon btn-finalize" title="Finalizar">
+                                        <i class="fas fa-flag-checkered"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    } @empty {
+                        <tr>
+                            <td colspan="6" class="empty-cell">
+                                No se encontraron cursos con los filtros seleccionados.
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

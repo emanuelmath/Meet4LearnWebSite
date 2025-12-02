@@ -1,0 +1,101 @@
+<div class="page-header-centered">
+    <h2 class="page-title">HISTORIAL DE TRANSACCIONES</h2>
+    <div class="header-subtitle">{{ filteredTransactions().length }} MOVIMIENTOS ENCONTRADOS</div>
+</div>
+
+@if (errorMessage()) {
+    <div class="alert-box error"><strong>Error:</strong> {{ errorMessage() }}</div>
+}
+
+<div class="management-container">
+    
+    <div class="toolbar">
+
+        <div class="search-group">
+            <i class="fas fa-search search-icon"></i>
+            <input 
+                type="text" 
+                placeholder="Buscar por Usuario (Nombre o DUI)..." 
+                [ngModel]="searchTerm()" 
+                (ngModelChange)="searchTerm.set($event)"
+                class="filter-input"
+            >
+        </div>
+
+        <div class="filter-group">
+            <div class="custom-select-wrapper">
+                <select [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)" class="filter-select">
+                    <option value="">TODAS LAS CATEGORÍAS</option>
+                    <option value="recharge">RECARGAS DE SALDO</option>
+                    <option value="course">COMPRAS DE CURSO</option>
+                    <option value="plan">SUSCRIPCIONES DOCENTE</option>
+                </select>
+                <i class="fas fa-filter select-icon"></i>
+            </div>
+        </div>
+
+        <button (click)="loadData()" class="btn-refresh" title="Actualizar Lista">
+            <i class="fas fa-sync-alt" [class.fa-spin]="isLoading()"></i> REFRESCAR
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>USUARIO / DOCUMENTO</th>
+                    <th>TIPO DE MOVIMIENTO</th>
+                    <th>DETALLE (REFERENCIA)</th>
+                    <th class="text-right">MONTO</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (isLoading()) {
+                    <tr>
+                        <td colspan="5" class="loading-cell">
+                            <i class="fas fa-circle-notch fa-spin"></i> Cargando transacciones...
+                        </td>
+                    </tr>
+                } @else {
+                    @for (tx of filteredTransactions(); track tx.id) {
+                        <tr>
+
+                            <td><span class="id-badge">#{{ tx.id }}</span></td>
+
+                            <td>
+                                <div class="user-info">
+                                    <span class="user-name">{{ tx.profile?.full_name || 'Usuario Desconocido' }}</span>
+                                    <span class="user-dui">DUI: {{ tx.profile?.DUI || '---' }}</span>
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="status-badge"
+                                      [class.type-recharge]="tx.itemType === 'recharge'"
+                                      [class.type-course]="tx.itemType === 'course'"
+                                      [class.type-plan]="tx.itemType === 'plan'">
+                                    {{ formatType(tx.itemType) }}
+                                </span>
+                            </td>
+
+                            <td class="font-mono">{{ tx.itemId }}</td>
+                            
+                            <td class="text-right amount-cell" 
+                                [class.amount-positive]="tx.itemType === 'recharge'"
+                                [class.amount-neutral]="tx.itemType !== 'recharge'">
+                                {{ tx.itemType === 'recharge' ? '+' : '-' }}${{ tx.amount }}
+                            </td>
+                        </tr>
+                    } @empty {
+                        <tr>
+                            <td colspan="5" class="empty-cell">
+                                No se encontraron transacciones.
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

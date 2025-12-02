@@ -33,5 +33,16 @@ export class PlanService {
   return data as Plan;
   }
 
+  async updatePlan(id: string, updates: Partial<Plan>) {
+    const { data, error } = await this.supabaseService.client
+      .from('plan')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data as Plan;
+  }
 
 }

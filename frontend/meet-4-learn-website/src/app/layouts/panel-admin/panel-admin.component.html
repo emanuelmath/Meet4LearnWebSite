@@ -1,1 +1,59 @@
-<p>panel-admin works!</p>
+<div class="dashboard-container">
+   
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="../../../assets/LogoMeet4LearnHD.png" alt="Logo Meet4Learn" class="logo-sidebar">
+        </div>
+       
+        <nav class="sidebar-nav">
+
+            <a [routerLink]="['/panel-admin/dashboard-admin']" routerLinkActive="active" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>INICIO</span>
+            </a>
+
+            <div class="section-label">ADMINISTRACIÓN</div>
+
+            <a [routerLink]="['/panel-admin/user-management']" routerLinkActive="active" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>GESTIÓN USUARIOS</span>
+            </a>
+
+            <a [routerLink]="['/panel-admin/course-management']" routerLinkActive="active" class="nav-item">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>GESTIÓN CURSOS</span>
+            </a>
+
+            <a [routerLink]="['/panel-admin/transaction-management']" routerLinkActive="active" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>TRANSACCIONES</span>
+            </a>
+
+            <a [routerLink]="['/panel-admin/subscription-management']" routerLinkActive="active" class="nav-item">
+                <i class="fas fa-crown"></i>
+                <span>SUSCRIPCIONES</span>
+            </a>
+
+        </nav>
+       
+        <div class="sidebar-footer">
+            <button (click)="handleLogout()" class="user-profile-btn logout-mode">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>CERRAR SESIÓN</span>
+            </button>
+           
+            @if (currentUser()) {
+                <div class="user-mini-info">
+                    {{ currentUser()?.email }}
+                    <br>
+                    <span style="opacity: 0.7; font-size: 0.9em;">(ADMINISTRADOR)</span>
+                </div>
+            }
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <router-outlet></router-outlet>
+    </main>
+
+</div>

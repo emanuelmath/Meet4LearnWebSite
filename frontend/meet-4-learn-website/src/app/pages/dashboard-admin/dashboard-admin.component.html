@@ -1,1 +1,102 @@
-<p>dashboard-admin works!</p>
+<div class="header-banner">
+    HOLA, @if(myProfile()) { {{ myProfile()?.full_name }} } @else { ADMIN }
+</div>
+
+@if (errorMessage()) {
+    <div class="alert-box error"><strong>Error:</strong> {{ errorMessage() }}</div>
+}
+@if (successMessage()) {
+    <div class="alert-box success"><strong>Éxito:</strong> {{ successMessage() }}</div>
+}
+
+<div class="dashboard-grid">
+
+    <div class="admin-stats-container" style="grid-column: 1 / -1;">
+
+        <div class="admin-stat-card yellow-card">
+            <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+            <div class="stat-data">
+                <span class="stat-number-lg">{{ stats().totalTeachers }}</span>
+                <span class="stat-label-lg">DOCENTES</span>
+            </div>
+        </div>
+
+        <div class="admin-stat-card yellow-card">
+            <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
+            <div class="stat-data">
+                <span class="stat-number-lg">{{ stats().totalStudents }}</span>
+                <span class="stat-label-lg">ESTUDIANTES</span>
+            </div>
+        </div>
+
+        <div class="admin-stat-card blue-card">
+            <div class="stat-icon"><i class="fas fa-book"></i></div>
+            <div class="stat-data">
+                <span class="stat-number-lg" style="color: white;">{{ stats().totalCourses }}</span>
+                <span class="stat-label-lg" style="color: #ddd;">CURSOS TOTALES</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel quick-actions-panel">
+        <h3 class="panel-title-blue">CONTROL RÁPIDO</h3>
+        <div class="quick-actions-grid">
+            <a [routerLink]="['/panel-admin/user-management']" class="quick-btn">
+                <i class="fas fa-users-cog"></i> GESTIONAR USUARIOS
+            </a>
+            <a [routerLink]="['/panel-admin/transaction-management']" class="quick-btn">
+                <i class="fas fa-money-bill-wave"></i> VER TRANSACCIONES
+            </a>
+        </div>
+    </div>
+
+    <div class="panel admin-panel">
+        <h3 class="panel-title-red">
+            MODERACIÓN DE CURSOS 
+            @if(stats().pendingCourses > 0) {
+                <span class="count-indicator warning">{{ stats().pendingCourses }} PENDIENTES</span>
+            }
+        </h3>
+        
+        <div class="admin-course-list">
+            @for (course of allCourses(); track course.id) {
+                <div class="admin-course-item">
+                    <div class="course-info">
+                        <h4>{{ course.name }}</h4>
+                        <p class="course-teacher">
+                            <strong>Docente:</strong> {{ course.profile?.full_name || 'Desconocido' }}
+                        </p>
+                        <span class="status-text">
+                            <strong [class.text-green]="course.status === 'activo'"
+                                    [class.text-orange]="course.status === 'en_revision'"
+                                    [class.text-red]="course.status === 'baneado'"
+                                    [class.text-gray]="course.status === 'finalizado'">
+                                {{ course.status.replace('_', ' ') | uppercase }}
+                            </strong>
+                        </span>
+                    </div>
+
+                    <div class="admin-actions">
+                        <button (click)="handleChangeStatus(course.id, 'activo')" class="btn-action btn-approve" title="Aprobar">
+                            <i class="fas fa-check-circle"></i>
+                        </button>
+                        <button (click)="handleChangeStatus(course.id, 'en_revision')" class="btn-action btn-review" title="Revisar">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <button (click)="handleChangeStatus(course.id, 'baneado')" class="btn-action btn-ban" title="Banear">
+                            <i class="fas fa-ban"></i>
+                        </button>
+                        <button (click)="handleChangeStatus(course.id, 'finalizado')" class="btn-action btn-finalize" title="Finalizar">
+                            <i class="fas fa-flag-checkered"></i>
+                        </button>
+                    </div>
+                </div>
+            } @empty {
+                <div class="empty-state">
+                    <p>No hay cursos disponibles en la plataforma.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>

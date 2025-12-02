@@ -141,7 +141,6 @@ export class ProfileTeacherComponent {
     });
   }
 
-  // ←←← NUEVA FUNCIÓN (CORRECTA)
   onCardNumberInput(value: string) {
     this.simulatedCardForm().cardNumber =
       value.replace(/\D/g, '').slice(0, 16);

@@ -8,7 +8,7 @@ export interface Profile {
   full_name: string;
   role: string;
   balance: number;
-  carnet: string;
+  DUI: string | null;
 }
 
 @Injectable({
@@ -27,21 +27,21 @@ export class ProfileService {
 }
 
   //Obtener docente por carnet.
-  async getTeacherByCarnet(carnet: String)  {
-  const { data, error } = await this.supabaseService.client.from('profile').select('*').eq('carnet', carnet).single();
+  async getTeacherByDUI(DUI: String)  {
+  const { data, error } = await this.supabaseService.client.from('profile').select('*').eq('DUI', DUI).single();
 
   if(error) throw error;
   return data as Profile;
 }
 
   // Crear un perfil.
- async createProfile(full_name: string, email: string, role: string, balance: number = 0.0, carnet: string) {
+ async createProfile(full_name: string, email: string, role: string, balance: number = 0.0, DUI: string) {
 
   const newProfile: Profile = {
     full_name: full_name,
     role: role,
     balance: balance,
-    carnet: carnet
+    DUI: DUI
   }
 
   const { data, error } = await this.supabaseService.client.from('profile').insert([newProfile]);

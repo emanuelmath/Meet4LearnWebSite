@@ -33,7 +33,7 @@ export class LoginComponent {
           this.router.navigate(['/panel-teacher']);
         break;
         case 'admin':
-          this.router.navigate(['/hub']); // /dashboard-adminl
+          this.router.navigate(['/panel-admin']);
         break;
         default:
           this.errorMessage.set("¡Eres estudiante! Pero solo puedes iniciar sesión en nuestra app.");

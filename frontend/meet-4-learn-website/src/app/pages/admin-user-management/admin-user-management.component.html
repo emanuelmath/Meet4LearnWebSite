@@ -1,0 +1,167 @@
+<div class="page-header-centered">
+    <h2 class="page-title">GESTIÓN DE USUARIOS</h2>
+    <div class="header-subtitle">{{ filteredUsers().length }} USUARIOS REGISTRADOS</div>
+</div>
+
+@if (errorMessage()) {
+    <div class="alert-box error">{{ errorMessage() }}</div>
+}
+@if (successMessage()) {
+    <div class="alert-box success">{{ successMessage() }}</div>
+}
+
+<div class="management-container">
+
+    <div class="toolbar">
+        <div class="search-group">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" placeholder="Buscar por Nombre, DUI o ID..." 
+                   [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event); applyFilters()"
+                   class="filter-input">
+        </div>
+
+        <div class="filter-group">
+            <select [ngModel]="roleFilter()" (ngModelChange)="roleFilter.set($event); applyFilters()" class="filter-select">
+                <option value="">TODOS LOS ROLES</option>
+                <option value="student">ESTUDIANTES</option>
+                <option value="teacher">DOCENTES</option>
+                <option value="admin">ADMINISTRADORES</option>
+            </select>
+        </div>
+
+        <button (click)="loadUsers()" class="btn-refresh" title="Recargar">
+            <i class="fas fa-sync-alt" [class.fa-spin]="isLoading()"></i>
+        </button>
+
+        <button class="btn-create" (click)="toggleCreateModal()">
+            <i class="fas fa-user-plus"></i> NUEVO
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>USUARIO</th>
+                    <th>ROL</th>
+                    <th>DOCUMENTO (DUI)</th>
+                    <th>ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (isLoading() && users().length === 0) {
+                    <tr><td colspan="4" class="text-center p-20">Cargando datos...</td></tr>
+                } @else {
+                    @for (user of filteredUsers(); track user.id) {
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="avatar-initial">{{ user.full_name.charAt(0).toUpperCase() }}</div>
+                                    <div class="user-info">
+                                        <span class="user-name">{{ user.full_name }}</span>
+                                        <span class="user-id-mini">Correo: {{ user.email }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="role-badge" 
+                                      [class.role-admin]="user.role === 'admin'"
+                                      [class.role-teacher]="user.role === 'teacher'"
+                                      [class.role-student]="user.role === 'student'">
+                                    {{ user.role | uppercase }}
+                                </span>
+                            </td>
+                            <td class="font-mono">{{ user.DUI || '---' }}</td>
+                            <td>
+                                <button class="btn-delete" (click)="handleDeleteUser(user)" title="Eliminar Usuario">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    } @empty {
+                        <tr><td colspan="4" class="text-center p-20">No se encontraron usuarios.</td></tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (isCreateModalOpen()) {
+    <div class="modal-overlay">
+        <div class="user-form-container">
+
+            <div class="header-banner-modal">
+                <span>CREAR NUEVO USUARIO</span>
+                <button type="button" class="btn-close-modal" (click)="toggleCreateModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="form-body-panel">
+                
+                @if (modalErrorMessage()) {
+                    <div class="modal-error-msg">{{ modalErrorMessage() }}</div>
+                }
+
+                <form (ngSubmit)="handleCreateUser()">
+                    
+                    <label class="form-label">ROL DEL USUARIO</label>
+                    <div class="custom-select-wrapper filled-input">
+                        <select class="custom-select" [(ngModel)]="newUser().role" name="role">
+                            <option value="student">ESTUDIANTE</option>
+                            <option value="teacher">DOCENTE</option>
+                            <option value="admin">ADMINISTRADOR</option>
+                        </select>
+                        <i class="fas fa-caret-down select-icon"></i>
+                    </div>
+
+                    <div class="metadata-grid">
+                        <div class="input-group">
+                            <label class="form-label">NOMBRE COMPLETO</label>
+                            <input type="text" class="input-field" 
+                                   [(ngModel)]="newUser().fullName" name="fullName" 
+                                   placeholder="Ej: Ana Martínez" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="form-label">
+                                DUI {{ newUser().role === 'teacher' ? '(REQUERIDO)' : '(OPCIONAL)' }}
+                            </label>
+                            <input type="text" class="input-field" 
+                                   [(ngModel)]="newUser().DUI" name="dui" 
+                                   placeholder="00000000-0">
+                        </div>
+                    </div>
+
+                    <div class="metadata-grid">
+                        <div class="input-group">
+                            <label class="form-label">CORREO (LOGIN)</label>
+                            <input type="email" class="input-field" 
+                                   [(ngModel)]="newUser().email" name="email" 
+                                   placeholder="usuario@email.com" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="form-label">CONTRASEÑA</label>
+                            <input type="text" class="input-field" 
+                                   [(ngModel)]="newUser().password" name="password" 
+                                   placeholder="Mínimo 6 caracteres" required>
+                        </div>
+                    </div>
+
+
+                    <div class="form-footer">
+                        <button type="button" class="btn-cancel-modal" (click)="toggleCreateModal()">
+                            CANCELAR
+                        </button>
+                        <button type="submit" class="btn-submit-modal" [disabled]="isLoading()">
+                            <i class="fas fa-check"></i> {{ isLoading() ? 'CREANDO...' : 'CREAR USUARIO' }}
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+}

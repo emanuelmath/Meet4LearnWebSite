@@ -1,0 +1,53 @@
+<div class="header-container">
+    <h2 class="page-title">Gestión de Planes de Suscripción</h2>
+    
+    <button class="btn-save-all" (click)="saveAllChanges()" [disabled]="isSaving() || isLoading()">
+        @if(isSaving()) {
+            <i class="fas fa-spinner fa-spin"></i> Guardando...
+        } @else {
+            Guardar todos los cambios
+        }
+    </button>
+</div>
+
+@if (errorMessage()) {
+    <div class="alert-box error">{{ errorMessage() }}</div>
+}
+@if (successMessage()) {
+    <div class="alert-box success">{{ successMessage() }}</div>
+}
+
+<div class="plans-grid">
+    @if (isLoading()) {
+        <p class="loading-text">Cargando configuración de planes...</p>
+    } @else {
+        @for (plan of plans(); track plan.id) {
+            
+            <div class="plan-card" [ngClass]="getBorderColor(plan.id)">
+                
+                <h3 class="plan-name">{{ plan.name }}</h3>
+                
+                <div class="input-group">
+                    <label>Precio ($) / Mes</label>
+                    <input type="number" [(ngModel)]="plan.price_monthly" class="input-gray">
+                </div>
+
+                <div class="input-group">
+                    <label>Max. Estudiantes / Curso</label>
+                    <input type="number" [(ngModel)]="plan.max_students" class="input-white">
+                </div>
+
+                <div class="input-group">
+                    <label>Max. Cursos Activos / Mes</label>
+                    <input type="number" [(ngModel)]="plan.max_active" class="input-white">
+                </div>
+
+                <div class="input-group">
+                    <label>Comisión (%)</label>
+                    <input type="number" [(ngModel)]="plan._commissionDisplay" class="input-white">
+                </div>
+
+            </div>
+        }
+    }
+</div>

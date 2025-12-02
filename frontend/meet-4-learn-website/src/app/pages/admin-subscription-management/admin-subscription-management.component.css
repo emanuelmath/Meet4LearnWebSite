@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+
+:host {
+    display: block; width: 100%; font-family: 'Oswald', sans-serif;
+    --color-dark-blue: #233044; 
+    --color-green-btn: #37c74d; 
+    --color-bg-gray: #e0e0e0; 
+}
+
+* { box-sizing: border-box; }
+
+/* Layout General */
+.header-container {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 40px; padding-bottom: 20px;
+}
+
+.page-title {
+    font-size: 2.5em; font-weight: 700; color: black; margin: 0;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.btn-save-all {
+    background-color: var(--color-green-btn); color: white; border: none;
+    padding: 15px 30px; font-size: 1.2em; font-weight: 700; border-radius: 8px;
+    cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s;
+}
+.btn-save-all:hover { transform: scale(1.02); background-color: #2ea83f; }
+.btn-save-all:active { transform: scale(0.98); }
+.btn-save-all:disabled { background-color: #ccc; cursor: not-allowed; transform: none; }
+
+/* Grid de Planes */
+.plans-grid {
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    gap: 40px; /* Espacio amplio entre tarjetas */
+    padding: 20px 0;
+}
+
+/* Tarjeta de Plan */
+.plan-card {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    display: flex; flex-direction: column; gap: 20px;
+    border-top: 8px solid #ccc; /* Borde superior por defecto */
+}
+
+/* Colores de Borde Superior */
+.border-blue { border-top-color: #233044; } /* Descubre */
+.border-yellow { border-top-color: #ffe44d; } /* Crece */
+.border-green { border-top-color: #37c74d; } /* Avanzado/Expande */
+
+.plan-name {
+    font-size: 2em; font-weight: 700; margin: 0 0 10px 0; color: black;
+}
+
+/* Inputs */
+.input-group { display: flex; flex-direction: column; gap: 8px; }
+
+.input-group label {
+    font-size: 0.9em; color: #666; font-weight: 500; font-family: sans-serif;
+}
+
+.input-gray, .input-white {
+    width: 100%; padding: 12px 15px; border-radius: 8px; 
+    font-size: 1.1em; font-weight: 600; border: 1px solid #ccc;
+    font-family: sans-serif;
+}
+
+/* Input Gris (Precio) */
+.input-gray {
+    background-color: #d9d9d9; 
+    border: none; 
+}
+
+/* Input Blanco (Resto) */
+.input-white {
+    background-color: white;
+    border: 1px solid #bbb;
+}
+
+.loading-text { font-size: 1.5em; text-align: center; color: #666; }
+
+/* Alertas */
+.alert-box { padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center; font-family: sans-serif; }
+.alert-box.error { background: #fee2e2; color: #b91c1c; }
+.alert-box.success { background: #dcfce7; color: #166534; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header-container { flex-direction: column; gap: 20px; text-align: center; }
+    .plans-grid { grid-template-columns: 1fr; }
+}

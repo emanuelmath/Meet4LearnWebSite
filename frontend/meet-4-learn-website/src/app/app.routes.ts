@@ -13,6 +13,12 @@ import { SelectedCourseTeacherComponent } from  './pages/selected-course-teacher
 import { SubscriptionsTeacherComponent } from './pages/subscriptions-teacher/subscriptions-teacher.component';
 import { CalendarTeacherComponent } from './pages/calendar-teacher/calendar-teacher.component';
 import { VideoCallTeacherComponent } from './pages/video-call-teacher/video-call-teacher.component';
+import { PanelAdminComponent } from './layouts/panel-admin/panel-admin.component';
+import { AdminCourseManagementComponent } from './pages/admin-course-management/admin-course-management.component';
+import { DashboardAdminComponent } from './pages/dashboard-admin/dashboard-admin.component';
+import { AdminUserManagementComponent } from './pages/admin-user-management/admin-user-management.component';
+import { AdminSubscriptionManagementComponent } from './pages/admin-subscription-management/admin-subscription-management.component';
+import { AdminTransactionsManagementComponent } from './pages/admin-transactions-management/admin-transactions-management.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/hub', pathMatch: 'full' },
@@ -33,6 +39,20 @@ export const routes: Routes = [
             { path: 'calendar', component: CalendarTeacherComponent},
             { path: 'video-call/:moduleId', component: VideoCallTeacherComponent }
         ]
+    },
+    { path: 'panel-admin',
+        component: PanelAdminComponent,
+        canActivate:[authGuard, roleGuard],
+        data: {role: 'admin'},
+        children:[
+            { path: '', redirectTo: 'dashboard-admin', pathMatch: 'full'},
+            { path: 'dashboard-admin', component: DashboardAdminComponent},
+            { path: 'course-management', component: AdminCourseManagementComponent},
+            { path: 'user-management', component: AdminUserManagementComponent},
+            { path: 'subscription-management', component: AdminSubscriptionManagementComponent},
+            { path: 'transaction-management', component: AdminTransactionsManagementComponent}
+        ]
+
     },
     { path: '**', redirectTo: 'hub' }
 ];
