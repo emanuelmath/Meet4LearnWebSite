@@ -19,12 +19,14 @@ import { DashboardAdminComponent } from './pages/dashboard-admin/dashboard-admin
 import { AdminUserManagementComponent } from './pages/admin-user-management/admin-user-management.component';
 import { AdminSubscriptionManagementComponent } from './pages/admin-subscription-management/admin-subscription-management.component';
 import { AdminTransactionsManagementComponent } from './pages/admin-transactions-management/admin-transactions-management.component';
+import { PlayStoreSimComponent } from './pages/play-store-sim/play-store-sim.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/hub', pathMatch: 'full' },
     { path: 'hub', component: HubComponent, canActivate: [redirectGuard] },
     { path: 'login', component: LoginComponent, canActivate: [redirectGuard] },
     { path: 'register', component: RegisterComponent, canActivate: [redirectGuard]},
+    { path: 'play-store', component: PlayStoreSimComponent},
     { path: 'panel-teacher',
         component: PanelTeacherComponent, 
         canActivate:[authGuard, roleGuard],
